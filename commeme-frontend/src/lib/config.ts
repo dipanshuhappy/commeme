@@ -1,6 +1,7 @@
 import {createConfig} from '@privy-io/wagmi';
-import { http } from 'viem';
-
+import { http, } from 'viem';
+import {cookieStorage,
+    createStorage} from "wagmi"
 import { Chain, polygonAmoy } from 'wagmi/chains'
 export const coreDaoTestnet = {
     id: 1115,
@@ -24,6 +25,10 @@ export const coreDaoTestnet = {
 } as const satisfies Chain;
 export const wagmiConfig = createConfig({
   chains: [coreDaoTestnet, polygonAmoy],
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
+  ssr: true,
   transports: {
     [coreDaoTestnet.id]: http(),
     [polygonAmoy.id]: http(),

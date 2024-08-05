@@ -6,9 +6,12 @@ import { TRPCReactProvider } from "~/trpc/react";
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 import {WagmiProvider} from '@privy-io/wagmi';
-import { wagmiConfig } from '~/lib/config';
+import { coreDaoTestnet, wagmiConfig } from '~/lib/config';
+import { polygonAmoy } from 'viem/chains';
+import { State } from 'wagmi';
 const queryClient = new QueryClient();
-export default function Providers({children}: {children: React.ReactNode}) {
+export default function Providers({children,initialState}: {children: React.ReactNode,initialState: State | undefined,}) {
+
 
     return (
       <PrivyProvider
@@ -24,11 +27,12 @@ export default function Providers({children}: {children: React.ReactNode}) {
           embeddedWallets: {
             createOnLogin: 'users-without-wallets',
           },
+          supportedChains:[coreDaoTestnet,polygonAmoy]
         }}
       >
          <QueryClientProvider client={queryClient}> 
           <TRPCReactProvider>
-            <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
+            <WagmiProvider config={wagmiConfig} initialState={initialState}>{children}</WagmiProvider>
             
             
           </TRPCReactProvider>
