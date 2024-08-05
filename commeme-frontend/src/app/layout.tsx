@@ -3,6 +3,9 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import Providers from "./_providers";
+import { cookieToInitialState } from "wagmi";
+import { wagmiConfig } from "~/lib/config";
+import { headers } from "next/headers";
 
 
 
@@ -15,10 +18,14 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const initialState = cookieToInitialState(
+    wagmiConfig,
+    headers().get('cookie')
+  )
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <Providers>{children}</Providers>
+        <Providers initialState={initialState}>{children}</Providers>
       </body>
     </html>
   );
