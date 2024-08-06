@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: MIT
 
 // import "../../helperContracts/erc20.sol";
+// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../../helperContracts/ierc20_permit.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "../../helperContracts/safemath.sol";
@@ -9,11 +10,16 @@ import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 import "./ERC20MemeToken.sol";
 import "../../helperContracts/wcore_interface.sol";
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
+import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 pragma solidity ^0.8.19;
 
-interface Pool {
-    function createPool(address tokenA, address tokenB, uint24 fee) external returns(address);
+interface Pair {
+    function createPair(address tokenA, address tokenB) external returns(address);
 }
 
 contract Commeme {
@@ -32,14 +38,16 @@ contract Commeme {
     address private factoryContractAddress;
     IWCORE private _wcore;
     ISwapRouter public immutable swapRouter;
-    IUniswapV3Pool public immutable wCorePool;
-
-    // uint24 fees = wCorePool.fee();
+    IUniswapV2Router02 public immutable IUniswapV2Router;
+    IUniswapV3Pool public  wCorePool;
+    IERC20Permit private _meme;
+    address public ROUTER;
 
     using SafeMath for uint256;
 
     error AETS();    
     IUniswapV3Factory public uniswapV3Factory;
+    // IUniswapV2Factory public 
     ISwapRouter public uniswapRouter;
 
     struct MemeDetails {
@@ -68,8 +76,9 @@ contract Commeme {
         address _wrapCoreAddress, 
         address _factoryContractAddress,
         address _swapRouter, 
+        address _router,
         address _wCorePoolAddress,
-        address _wCoreAddress //// 0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f
+        address _wCoreAddress
     ) {
         memeDetails = MemeDetails({
             name: _name,
@@ -87,6 +96,7 @@ contract Commeme {
         wrapCoreAddress = _wrapCoreAddress;
         _wcore = IWCORE(_wCoreAddress);
         swapRouter = ISwapRouter(_swapRouter);
+        ROUTER = _router;
         wCorePool = IUniswapV3Pool(_wCorePoolAddress);
         factoryContractAddress = _factoryContractAddress;
         isActive = true;
@@ -109,28 +119,44 @@ contract Commeme {
             }
             if(donationAmount >= threshold) {
                 _deployToken();
-                _createPool(wrapCoreAddress , memeDetails.tokenAddress, 3000, factoryContractAddress);
+                _createPool(wrapCoreAddress , memeDetails.tokenAddress, factoryContractAddress);
+                _meme = IERC20Permit(memeDetails.tokenAddress);
                 _wcore.deposit{value: address(this).balance};
-                ISwapRouter.ExactInputParams memory params = ISwapRouter.ExactInputParams({
-                    path: abi.encodePacked(address(_wcore), wCorePool.fee(), memeDetails.tokenAddress),
-                    recipient: address(this),
-                    deadline: block.timestamp,
-                    amountIn: address(_wcore).balance,
-                    amountOutMinimum: address(_wcore).balance.mul(100-5).div(100)
-                });
-                uint256 memeTokens = swapRouter.exactInput(params);
-                _transferTokens(memeTokens);
+                uint256 toLiquidity =  (memeDetails.totalSupply.mul(70)).div(100);
+                uint256 forAirDrop = memeDetails.totalSupply.sub(toLiquidity);
+                _addLiquidity(wrapCoreAddress, memeDetails.tokenAddress, toLiquidity, donationAmount);
+                _transferTokens(forAirDrop);
             }
             timeToClose = timeToClose.add(60 minutes);
         }
     }
 
-    function _createPool(address tokenA, address tokenB, uint24 fee, address _factory) public returns(address){
-        require(tokenA != tokenB, "Cannot create a pool with the same token");
-        Pool pool = Pool(_factory);
-        address poolAddress = pool.createPool(tokenA, tokenB, fee);
-        return poolAddress;
+    function _createPool(address token0, address token1, address _factory) private returns(address){
+        require(token0 != token1, "Cannot create a pool with the same token");
+        Pair pair = Pair(_factory);
+        address pairAddress = pair.createPair(token0, token1);
+        return pairAddress;
     }
+
+    function _addLiquidity(address _tokenA, address _tokenB, uint256 _amountA, uint256 _amountB) private {
+        _meme.transferFrom(msg.sender, address(this), _amountA);
+        _wcore.transferFrom(msg.sender, address(this), _amountB);
+
+        _meme.approve(ROUTER, _amountA);
+        _wcore.approve(ROUTER, _amountB);
+
+        (uint256 amountA, uint256 amountB, uint256 liquidity) = IUniswapV2Router02(ROUTER).addLiquidity(
+            _tokenA,
+            _tokenB,
+            _amountA,
+            _amountB,
+            1,
+            1,
+            address(this),
+            block.timestamp
+        );
+    }
+
 
     function _refundIfNotActive() private {
         if(isActive) revert("it's still active");
@@ -152,11 +178,15 @@ contract Commeme {
         memeDetails.tokenAddress = address(token);
     }
 
-    // function _transferTokens(uint256 _totalMemeTokens) private {
-    //     for(uint i=0; i<donators.length; i++) {
-            
-    //     }
-    // }
+    function _transferTokens(uint256 forAirDrop) private {
+        for(uint i=0; i<donators.length; i++) {
+            address donator = donators[i];
+            uint256 donatorContribution = donatorsAmount[donator];
+            uint256 donatorPercentage = donatorContribution.mul(100).div(donationAmount);
+            uint256 tokensToSend = forAirDrop.mul(donatorPercentage).div(100);
+            _meme.transfer(donator, tokensToSend);
+        }
+    }
 
     receive() external payable {
         earlyDonations();
