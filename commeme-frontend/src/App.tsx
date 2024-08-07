@@ -1,19 +1,30 @@
-import { useState } from 'react'
+
 import './App.css'
-import { Button } from './components/ui/button'
-import { usePrivy } from '@privy-io/react-auth';
-import { World } from './components/ui/globe';
+import {  Route, Switch } from "wouter";
+// import MemeDiv from './components/meme-template';
+import Hero from './components/hero';
 
 
 function App() {
-  const {ready, authenticated, login} = usePrivy();
-  const disableLogin = !ready || (ready && authenticated);
 
   return (
     <>
-     <Button  disabled={disableLogin} onClick={login}> Login </Button>
-     
-    </>
+    {/* 
+      Routes below are matched exclusively -
+      the first matched route gets rendered
+    */}
+    <Switch>
+      <Route path='/' component={Hero} />
+      {/* <Route path="/meme-template" component={MemeDiv} /> */}
+
+      <Route path="/users/:name">
+        {(params) => <>Hello, {params.name}!</>}
+      </Route>
+
+      {/* Default route in a switch */}
+      <Route>404: No such page!</Route>
+    </Switch>
+  </>
   )
 }
 
