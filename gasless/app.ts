@@ -20,13 +20,13 @@ const ENV = z.object({
   PORT:z.string().optional()
 })
 console.log("hiiii")
-app.post("/transaction", (req, res) => {
+app.post("/transaction", async (req, res) => {
   const unparasedBody = req.body;
   console.log(unparasedBody)
   const env = ENV.parse(process.env)
   const parsedTransaction = TransactionSchema.parse(unparasedBody)
 
-  const receipt = sendRawTransaction({
+  const receipt = await sendRawTransaction({
     key: env.KEY as `0x${string}`,
     rpc: parsedTransaction.chainId === 1116 ? env.COREDAO_RPC : env.POLYGON_RPC,
     to: parsedTransaction.to as `0x${string}`,
@@ -34,6 +34,7 @@ app.post("/transaction", (req, res) => {
     data: parsedTransaction.data as `0x${string}`,
     chainId: parsedTransaction.chainId
   })
+  console.log({receipt},"recept")
 
   return res.status(200).json(receipt);
 });
