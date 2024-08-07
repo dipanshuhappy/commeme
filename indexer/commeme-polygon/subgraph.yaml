@@ -8,7 +8,7 @@ dataSources:
     name: CommemeFactory
     network: matic
     source:
-      address: "0x54AE0f47ad5DABcDc77478102e41C6d2b8bdf5D6"
+      address: "0x427cEFB27A00000AAb270655240276E304e3383B"
       abi: CommemeFactory
       startBlock: 0
     mapping:
