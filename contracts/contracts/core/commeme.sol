@@ -1,20 +1,16 @@
 //SPDX-License-Identifier: MIT
 
-// import "../../helperContracts/erc20.sol";
-// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
 import "../../helperContracts/ierc20_permit.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "../../helperContracts/safemath.sol";
-// import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 import "./erc20Meme.sol";
 import "../../helperContracts/wcore_interface.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
-// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 pragma solidity ^0.8.19;
 
@@ -38,11 +34,20 @@ contract Commeme {
     IUniswapV2Router02 public immutable IUniswapV2Router;
     IERC20Permit private _meme;
     address public ROUTER;
+    // AggregatorV3Interface public immutable corePriceAggregator;
 
     using SafeMath for uint256;
+    address public poolAddress;
+
+    uint256 public price;
 
     error AETS();    
     IUniswapV3Factory public uniswapV3Factory;
+
+    event CommemeCreated(address indexed contractAddress, address indexed sender, uint256 threshold, address factoryContractAddress, address wCoreAddress, address router, uint256 price);
+    event PoolCreated(address indexed poolAddress, address tokenA, address tokenB);
+    event TokenDeployed(address indexed tokenAddress, string tokenName, string tokenSymbol, uint256 totalSupply);
+    event LiquidityAdded(address tokenA, address tokenB, uint256 amountA, uint256 amountB);
 
     struct MemeDetails {
         string name;
@@ -67,7 +72,9 @@ contract Commeme {
         uint256 _threshold,
         address _factoryContractAddress,
         address _router,
-        address _wCoreAddress
+        address _wCoreAddress,
+        // address _corePriceAggregator,
+        uint256 _price
     ) {
         memeDetails = MemeDetails({
             name: _name,
@@ -80,16 +87,20 @@ contract Commeme {
         threshold = _threshold;
         _wcore = IWCORE(_wCoreAddress);
         ROUTER = _router;
+        price = _price;
         factoryContractAddress = _factoryContractAddress;
+        // corePriceAggregator = AggregatorV3Interface(_corePriceAggregator);
         isActive = true;
+
+        emit CommemeCreated(address(this), _sender, _threshold, _factoryContractAddress, _wCoreAddress, _router, _price);
     }
 
-    function earlyDonations(address _sender) public payable {
+    function earlyDonations(address _sender, uint256 _amount) public payable {
         if(donationAmount >= threshold) revert("ATR"); // ATR - Already Threshold Reaches
         if(donationAmount < threshold && block.timestamp >= timeToClose) {
             _refundIfNotActive();
         } else {
-            uint256 _amount = msg.value;
+            // uint256 _amount = msg.value;
             if(!isDonator[_sender]) {
                 donators.push(_sender);
                 isDonator[_sender] = true;
@@ -101,35 +112,40 @@ contract Commeme {
             }
             if(donationAmount >= threshold) {
                 _deployToken();
+                emit TokenDeployed(memeDetails.tokenAddress, memeDetails.name, memeDetails.symbol, memeDetails.totalSupply);
                 _createPool(address(_wcore) , memeDetails.tokenAddress, factoryContractAddress);
+                emit PoolCreated(poolAddress, address(_wcore), memeDetails.tokenAddress);
                 _meme = IERC20Permit(memeDetails.tokenAddress);
-                _wcore.deposit{value: address(this).balance};
+                _wcore.deposit{value: donationAmount}();
                 uint256 toLiquidity =  (memeDetails.totalSupply.mul(70)).div(100);
                 uint256 forAirDrop = memeDetails.totalSupply.sub(toLiquidity);
-                _addLiquidity(address(_wcore), memeDetails.tokenAddress, toLiquidity, donationAmount);
+                _addLiquidity(toLiquidity, _wcore.balanceOf(address(this)));
+                emit LiquidityAdded(address(_wcore), memeDetails.tokenAddress, toLiquidity, donationAmount);
                 _transferTokens(forAirDrop);
             }
-            timeToClose = timeToClose.add(60 minutes);
+            // (, int256 latestPrice , , ,)  = corePriceAggregator.latestRoundData();
+            uint256 minutesToAdd = ((price.mul(_amount)).mul(60));
+            timeToClose = timeToClose.add((minutesToAdd.mul(1 minutes)));
         }
     }
 
     function _createPool(address token0, address token1, address _factory) private returns(address){
         require(token0 != token1, "Cannot create a pool with the same token");
         Pool pool = Pool(_factory);
-        address poolAddress = pool.createPair(token0, token1);
+        poolAddress = pool.createPair(token0, token1);
         return poolAddress;
     }
 
-    function _addLiquidity(address _tokenA, address _tokenB, uint256 _amountA, uint256 _amountB) private returns(uint256, uint256, uint256) {
+    function _addLiquidity(uint256 _amountmeme, uint256 _amountCoin) private returns(uint256, uint256, uint256) {
 
-        _meme.approve(ROUTER, _amountA);
-        _wcore.approve(ROUTER, _amountB);
+        _meme.approve(ROUTER, _amountmeme);
+        _wcore.approve(ROUTER, _amountCoin);
 
         (uint256 amountA, uint256 amountB, uint256 liquidity) = IUniswapV2Router02(ROUTER).addLiquidity(
-            _tokenA,
-            _tokenB,
-            _amountA,
-            _amountB,
+            address(_meme),
+            address(_wcore),
+            _amountmeme,
+            _amountCoin,
             1,
             1,
             address(this),
@@ -171,6 +187,6 @@ contract Commeme {
     }
 
     receive() external payable {
-        earlyDonations(msg.sender);
+        earlyDonations(msg.sender, msg.value);
     }
 }
