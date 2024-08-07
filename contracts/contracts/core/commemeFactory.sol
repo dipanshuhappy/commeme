@@ -15,11 +15,8 @@ contract CommemeFactory {
         string memory _symbol,
         uint256 _totalSupply,
         uint256 _threshold,
-        address _wrapCoreAddress,
         address _factoryContractAddress,
-        address _swapRouter,
         address _router,
-        address _wCorePoolAddress,
         address _wCoreAddress
     ) external returns (address) {
         Commeme newCommeme = new Commeme(
@@ -28,11 +25,8 @@ contract CommemeFactory {
             _symbol,
             _totalSupply,
             _threshold,
-            _wrapCoreAddress,
             _factoryContractAddress,
-            _swapRouter,
             _router,
-            _wCorePoolAddress,
             _wCoreAddress
         );
 
