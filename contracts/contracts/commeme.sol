@@ -8,7 +8,7 @@ import "../../helperContracts/safemath.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
-import "./ERC20MemeToken.sol";
+import "./erc20Meme.sol";
 import "../../helperContracts/wcore_interface.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
@@ -18,9 +18,10 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 pragma solidity ^0.8.19;
 
-interface Pair {
+interface Pool {
     function createPair(address tokenA, address tokenB) external returns(address);
 }
+
 
 contract Commeme {
     address[] public donators;
@@ -32,14 +33,12 @@ contract Commeme {
     uint256 public timeToClose;
     uint256 public threshold;
     bool public poolCreated;
-    mapping(uint256 => int24) public feeAmountTickSpacing;
     mapping(address => mapping(address => mapping(uint24 => address))) public getPool;
     address private wrapCoreAddress;
     address private factoryContractAddress;
     IWCORE private _wcore;
     ISwapRouter public immutable swapRouter;
     IUniswapV2Router02 public immutable IUniswapV2Router;
-    IUniswapV3Pool public  wCorePool;
     IERC20Permit private _meme;
     address public ROUTER;
 
@@ -92,12 +91,10 @@ contract Commeme {
         timeToClose = block.timestamp + 1440 minutes;
         threshold = _threshold;
         minAmountToKeepAlive = 100000000000;
-        feeAmountTickSpacing[10000] = 200;
         wrapCoreAddress = _wrapCoreAddress;
         _wcore = IWCORE(_wCoreAddress);
         swapRouter = ISwapRouter(_swapRouter);
         ROUTER = _router;
-        wCorePool = IUniswapV3Pool(_wCorePoolAddress);
         factoryContractAddress = _factoryContractAddress;
         isActive = true;
     }
