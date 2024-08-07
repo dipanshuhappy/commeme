@@ -1,8 +1,11 @@
-use rocket::{get, routes};
+mod wallet;
+use rocket::{get, routes,post};
 
-#[get("/")]
-fn index() -> &'static str {
+
+#[post("/transaction",format = "application/json", data = "<transaction_data>")]
+fn transaction(transaction_data: wallet::) -> &'static str {
     "Hello, world!"
+    
 }
 
 #[shuttle_runtime::main]
