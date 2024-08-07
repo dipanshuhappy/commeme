@@ -2,6 +2,8 @@ import { useState } from 'react'
 import './App.css'
 import { Button } from './components/ui/button'
 import { usePrivy } from '@privy-io/react-auth';
+import { World } from './components/ui/globe';
+
 
 function App() {
   const {ready, authenticated, login} = usePrivy();
@@ -10,6 +12,7 @@ function App() {
   return (
     <>
      <Button  disabled={disableLogin} onClick={login}> Login </Button>
+     
     </>
   )
 }
