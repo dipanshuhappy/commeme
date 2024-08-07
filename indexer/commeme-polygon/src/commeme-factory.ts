@@ -5,7 +5,6 @@ export function handleCommemeCreated(event: CommemeCreatedEvent): void {
   let entity = new CommemeCreated(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
-  entity._id = event.params._id
   entity.commemeAddress = event.params.commemeAddress
   entity.creator = event.params.creator
 

@@ -4,12 +4,6 @@
 		"inputs": [
 			{
 				"indexed": true,
-				"internalType": "uint256",
-				"name": "_id",
-				"type": "uint256"
-			},
-			{
-				"indexed": true,
 				"internalType": "address",
 				"name": "commemeAddress",
 				"type": "address"
@@ -26,30 +20,6 @@
 	},
 	{
 		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "allCommemes",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_id",
-				"type": "uint256"
-			},
 			{
 				"internalType": "address",
 				"name": "_sender",
@@ -105,6 +75,25 @@
 			}
 		],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "allCommemes",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{

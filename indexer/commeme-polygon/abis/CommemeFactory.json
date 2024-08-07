@@ -4,12 +4,6 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "_id",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
         "internalType": "address",
         "name": "commemeAddress",
         "type": "address"
@@ -25,15 +19,7 @@
     "type": "event"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "allCommemes",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
-      { "internalType": "uint256", "name": "_id", "type": "uint256" },
       { "internalType": "address", "name": "_sender", "type": "address" },
       { "internalType": "string", "name": "_name", "type": "string" },
       { "internalType": "string", "name": "_symbol", "type": "string" },
@@ -51,6 +37,13 @@
     "name": "createCommeme",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "allCommemes",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
