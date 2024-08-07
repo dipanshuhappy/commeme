@@ -1,0 +1,9 @@
+type CommemeCreated @entity(immutable: true) {
+  id: Bytes!
+  _id: BigInt! # uint256
+  commemeAddress: Bytes! # address
+  creator: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
