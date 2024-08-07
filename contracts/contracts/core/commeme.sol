@@ -99,19 +99,19 @@ contract Commeme {
         isActive = true;
     }
 
-    function earlyDonations() public payable {
+    function earlyDonations(address _sender) public payable {
         if(donationAmount >= threshold) revert("ATR"); // ATR - Already Threshold Reaches
         if(donationAmount < threshold && block.timestamp >= timeToClose) {
             _refundIfNotActive();
         } else {
             uint256 _amount = msg.value;
-            if(!isDonator[msg.sender]) {
-                donators.push(msg.sender);
-                isDonator[msg.sender] = true;
-                donatorsAmount[msg.sender] = donatorsAmount[msg.sender].add(_amount);
+            if(!isDonator[_sender]) {
+                donators.push(_sender);
+                isDonator[_sender] = true;
+                donatorsAmount[_sender] = donatorsAmount[_sender].add(_amount);
                 donationAmount = donationAmount.add(_amount);
             } else {
-                donatorsAmount[msg.sender] = donatorsAmount[msg.sender].add(_amount);
+                donatorsAmount[_sender] = donatorsAmount[_sender].add(_amount);
                 donationAmount = donationAmount.add(_amount);
             }
             if(donationAmount >= threshold) {
@@ -136,8 +136,6 @@ contract Commeme {
     }
 
     function _addLiquidity(address _tokenA, address _tokenB, uint256 _amountA, uint256 _amountB) private {
-        _meme.transferFrom(msg.sender, address(this), _amountA);
-        _wcore.transferFrom(msg.sender, address(this), _amountB);
 
         _meme.approve(ROUTER, _amountA);
         _wcore.approve(ROUTER, _amountB);
