@@ -1,15 +1,16 @@
-// SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.19;
 
-import "./Commeme.sol";
+import "./commeme.sol";
 
 contract CommemeFactory {
     address[] public allCommemes;
 
-    event CommemeCreated(address indexed commemeAddress, address indexed creator);
+    event CommemeCreated(uint256 indexed _id, address indexed commemeAddress, address indexed creator);
 
     function createCommeme(
+        uint256 _id,
         address _sender,
         string memory _name,
         string memory _symbol,
@@ -17,7 +18,8 @@ contract CommemeFactory {
         uint256 _threshold,
         address _factoryContractAddress,
         address _router,
-        address _wCoreAddress
+        address _wCoreAddress,
+        uint256 _price
     ) external returns (address) {
         Commeme newCommeme = new Commeme(
             _sender,
@@ -27,15 +29,16 @@ contract CommemeFactory {
             _threshold,
             _factoryContractAddress,
             _router,
-            _wCoreAddress
+            _wCoreAddress,
+            _price
         );
 
         allCommemes.push(address(newCommeme));
-        emit CommemeCreated(address(newCommeme), msg.sender);
+        emit CommemeCreated(_id, address(newCommeme), msg.sender);
         return address(newCommeme);
     }
 
-    function getAllCommemes() external view returns (address[] memory) {
+    function getAllCommemes() public view returns (address[] memory) {
         return allCommemes;
     }
 }
