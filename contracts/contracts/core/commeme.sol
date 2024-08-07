@@ -5,7 +5,7 @@
 import "../../helperContracts/ierc20_permit.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "../../helperContracts/safemath.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+// import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 import "./erc20Meme.sol";
@@ -28,16 +28,13 @@ contract Commeme {
     mapping(address => uint256) public donatorsAmount;
     uint256 public donationAmount;
     mapping(address => bool) public isDonator;
-    uint256 private minAmountToKeepAlive;
     bool public isActive;
     uint256 public timeToClose;
     uint256 public threshold;
     bool public poolCreated;
     mapping(address => mapping(address => mapping(uint24 => address))) public getPool;
-    address private wrapCoreAddress;
     address private factoryContractAddress;
     IWCORE private _wcore;
-    ISwapRouter public immutable swapRouter;
     IUniswapV2Router02 public immutable IUniswapV2Router;
     IERC20Permit private _meme;
     address public ROUTER;
@@ -46,15 +43,11 @@ contract Commeme {
 
     error AETS();    
     IUniswapV3Factory public uniswapV3Factory;
-    // IUniswapV2Factory public 
-    ISwapRouter public uniswapRouter;
 
     struct MemeDetails {
         string name;
         string symbol;
         uint256 totalSupply;
-        uint256 circulatingSupply;
-        uint256 availableSupply;
         address tokenAddress;
         address owner;
     }
@@ -72,28 +65,20 @@ contract Commeme {
         string memory _symbol, 
         uint256 _totalSupply, 
         uint256 _threshold,
-        address _wrapCoreAddress, 
         address _factoryContractAddress,
-        address _swapRouter, 
         address _router,
-        address _wCorePoolAddress,
         address _wCoreAddress
     ) {
         memeDetails = MemeDetails({
             name: _name,
             symbol: _symbol,
             totalSupply: _totalSupply,
-            circulatingSupply: 0,
-            availableSupply: _totalSupply,
             tokenAddress: 0x0000000000000000000000000000000000000000,
             owner: _sender
         });
         timeToClose = block.timestamp + 1440 minutes;
         threshold = _threshold;
-        minAmountToKeepAlive = 100000000000;
-        wrapCoreAddress = _wrapCoreAddress;
         _wcore = IWCORE(_wCoreAddress);
-        swapRouter = ISwapRouter(_swapRouter);
         ROUTER = _router;
         factoryContractAddress = _factoryContractAddress;
         isActive = true;
@@ -116,12 +101,12 @@ contract Commeme {
             }
             if(donationAmount >= threshold) {
                 _deployToken();
-                _createPool(wrapCoreAddress , memeDetails.tokenAddress, factoryContractAddress);
+                _createPool(address(_wcore) , memeDetails.tokenAddress, factoryContractAddress);
                 _meme = IERC20Permit(memeDetails.tokenAddress);
                 _wcore.deposit{value: address(this).balance};
                 uint256 toLiquidity =  (memeDetails.totalSupply.mul(70)).div(100);
                 uint256 forAirDrop = memeDetails.totalSupply.sub(toLiquidity);
-                _addLiquidity(wrapCoreAddress, memeDetails.tokenAddress, toLiquidity, donationAmount);
+                _addLiquidity(address(_wcore), memeDetails.tokenAddress, toLiquidity, donationAmount);
                 _transferTokens(forAirDrop);
             }
             timeToClose = timeToClose.add(60 minutes);
@@ -130,12 +115,12 @@ contract Commeme {
 
     function _createPool(address token0, address token1, address _factory) private returns(address){
         require(token0 != token1, "Cannot create a pool with the same token");
-        Pair pair = Pair(_factory);
-        address pairAddress = pair.createPair(token0, token1);
-        return pairAddress;
+        Pool pool = Pool(_factory);
+        address poolAddress = pool.createPair(token0, token1);
+        return poolAddress;
     }
 
-    function _addLiquidity(address _tokenA, address _tokenB, uint256 _amountA, uint256 _amountB) private {
+    function _addLiquidity(address _tokenA, address _tokenB, uint256 _amountA, uint256 _amountB) private returns(uint256, uint256, uint256) {
 
         _meme.approve(ROUTER, _amountA);
         _wcore.approve(ROUTER, _amountB);
@@ -150,6 +135,8 @@ contract Commeme {
             address(this),
             block.timestamp
         );
+
+        return(amountA, amountB, liquidity);
     }
 
 
@@ -184,6 +171,6 @@ contract Commeme {
     }
 
     receive() external payable {
-        earlyDonations();
+        earlyDonations(msg.sender);
     }
 }
