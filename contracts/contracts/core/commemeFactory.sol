@@ -7,10 +7,9 @@ import "./commeme.sol";
 contract CommemeFactory {
     address[] public allCommemes;
 
-    event CommemeCreated(uint256 indexed _id, address indexed commemeAddress, address indexed creator);
+    event CommemeCreated(address indexed commemeAddress, address indexed creator);
 
     function createCommeme(
-        uint256 _id,
         address _sender,
         string memory _name,
         string memory _symbol,
@@ -34,7 +33,7 @@ contract CommemeFactory {
         );
 
         allCommemes.push(address(newCommeme));
-        emit CommemeCreated(_id, address(newCommeme), msg.sender);
+        emit CommemeCreated(address(newCommeme), msg.sender);
         return address(newCommeme);
     }
 
