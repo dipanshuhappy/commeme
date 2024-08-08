@@ -82,10 +82,11 @@ const MemeDiv = () => {
 					maxHeight: '50vh',
 					maxWidth: '50vw',
 				}}>
-				<h1 style={{ color: selectedColor, padding: 0, fontWeight: 600 }}>
-					{topText}
-				</h1>
-				<h2 style={{ color: selectedColor, padding: 0, fontWeight: 600 }}>
+				<div style={{ color: selectedColor, padding: 0, fontWeight: 600, fontSize: '3rem' }} >
+  {topText}
+</div>
+
+				<h2 style={{ color: selectedColor, padding: 0, fontWeight: 600,fontSize: '3rem' }} className='text-[5rem]'>
 					{bottomText}
 				</h2>
 			</div>
