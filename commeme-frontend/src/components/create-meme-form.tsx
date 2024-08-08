@@ -106,8 +106,8 @@ export default function CreateMemeForm() {
           "Content-Type":"application/json"
         }
       })
-
-      const responseJson = res.json() as unknown as {hash:string};
+      console.log({res})
+      const responseJson = await res.json() as unknown as {hash:string};
       toast.success(<TransactionToast hash={responseJson.hash} title="Commeme Deployed" scanner={`${addresses.scanner}/tx/`} />)
       setLocation("/explore")
 
