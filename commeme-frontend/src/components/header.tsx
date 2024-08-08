@@ -1,7 +1,7 @@
 // import React from 'react'
 import { Button } from "./ui/button";
 
-import { usePrivy } from "@privy-io/react-auth";
+
 // import { World } from './components/ui/globe';
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 // import NavbarHeader from './navbar-header';
@@ -10,10 +10,15 @@ import { Else, If, Then } from "react-if";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { shortenAddress } from "@/lib/utils";
 import { Badge } from "./ui/badge";
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from "wagmi";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 
 export default function Header() {
-  const { ready, authenticated, login, user, logout } = usePrivy();
-  const disableLogin = !ready || (ready && authenticated);
+  const account = useAccount();
+  const { connectors, connect} = useConnect();
+  const { disconnect } = useDisconnect()
+  const { chains, switchChain } = useSwitchChain();
+
 
   return (
     <div className="py-2 px-4 w-full flex justify-between items-center">
@@ -36,21 +41,71 @@ export default function Header() {
           Registered Tokens
         </Link>
       </div>
-      <If condition={authenticated && !!user && !!user.wallet}>
+      <If condition={account.address}>
         <Then>
-        <Popover>
+          <Popover>
             <PopoverTrigger>
-              <Badge>{shortenAddress(user?.wallet?.address ?? '')}</Badge>
+              <Badge>{shortenAddress(account?.address ?? '')}</Badge>
             </PopoverTrigger>
             <PopoverContent className="w-full">
-              <Button onClick={logout}>Disconnect</Button>
+              <div className="flex flex-col space-y-2">
+                {chains.map((chain) => (
+                  <Button
+                    key={chain.id}
+                    onClick={async () => switchChain({chainId: chain.id})}
+                  >
+                    {chain.name}
+                  </Button>
+                ))}
+
+                <Button onClick={()=> disconnect()}>Disconnect</Button>
+              </div>
             </PopoverContent>
           </Popover>
         </Then>
         <Else>
-          <Button disabled={disableLogin} onClick={login}>
-            Enter
-          </Button>
+        <Dialog>
+          <DialogTrigger className="px-4 py-2 rounded-md  text-center relative overflow-hidden bg-black dark:bg-white dark:text-black text-white flex justify-center group/modal-btn">
+            <span className="group-hover/modal-btn:translate-x-40 text-center transition duration-500">
+              Connect Wallet
+            </span>
+
+            <div className="-translate-x-40 group-hover/modal-btn:translate-x-0 flex items-center justify-center absolute inset-0 transition duration-500 text-white z-20">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlSpace="preserve"
+                width={15}
+                height={15}
+                stroke="#000"
+                viewBox="0 0 458.531 458.531"
+              >
+                <path d="M336.688 343.962c-21.972-.001-39.848-17.876-39.848-39.848v-66.176c0-21.972 17.876-39.847 39.848-39.847h103.83c.629 0 1.254.019 1.876.047v-65.922c0-16.969-13.756-30.725-30.725-30.725H30.726C13.756 101.49 0 115.246 0 132.215v277.621c0 16.969 13.756 30.726 30.726 30.726h380.943c16.969 0 30.725-13.756 30.725-30.726v-65.922c-.622.029-1.247.048-1.876.048h-103.83z" />
+                <path d="M440.518 219.925h-103.83c-9.948 0-18.013 8.065-18.013 18.013v66.176c0 9.948 8.065 18.013 18.013 18.013h103.83c9.948 0 18.013-8.064 18.013-18.013v-66.176c0-9.949-8.065-18.013-18.013-18.013zm-68.052 77.099c-14.359 0-25.999-11.64-25.999-25.999s11.64-25.999 25.999-25.999c14.359 0 25.999 11.64 25.999 25.999 0 14.359-11.64 25.999-25.999 25.999zM358.169 45.209c-6.874-20.806-29.313-32.1-50.118-25.226L151.958 71.552h214.914l-8.703-26.343z" />
+              </svg>
+            </div>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-center">Select Wallet</DialogTitle>
+            </DialogHeader>
+            <DialogDescription>
+              <div className="flex justify-between flex-col  items-center my-4">
+                {connectors.map((connector) => (
+                  <Button
+                    key={connector.uid}
+                    onClick={() => {
+                      connect({ connector })
+                    
+                    }}
+                    className="my-2"
+                  >
+                    {connector.name}
+                  </Button>
+                ))}
+              </div>
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
         </Else>
       </If>
     </div>
