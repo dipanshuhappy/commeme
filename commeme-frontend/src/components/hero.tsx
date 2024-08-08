@@ -3,7 +3,7 @@ import { HeroHighlight, Highlight } from "./ui/hero-highlight.tsx";
 import { motion } from "framer-motion";
 import { CardBody, CardContainer, CardItem } from "./ui/3d-card.tsx";
 import { If } from "react-if";
-import { usePrivy } from "@privy-io/react-auth";
+
 // import { Boxes } from './ui/background-boxes.tsx'
 import {
   Modal,
@@ -12,9 +12,10 @@ import {
   ModalTrigger,
 } from "./ui/animated-modal.tsx";
 import CreateMemeForm from "./create-meme-form.tsx";
+import { useAccount, useConnect } from "wagmi";
 
 export default function Hero() {
-  const { authenticated } = usePrivy();
+  const { isConnected } = useAccount()
   return (
     <>
       {/* <Boxes/> */}
@@ -47,7 +48,7 @@ export default function Hero() {
                 degen positive sum. Let's Seize the memes of production !{" "}
               </div>
             </motion.h1>
-            <If condition={authenticated}>
+            <If condition={isConnected}>
               <div className="flex justify-center items-center mt-4 space-x-3">
                 <Modal>
                   <ModalTrigger>
