@@ -1,11 +1,14 @@
 import express from "express";
 import {z} from "zod"
 import { sendRawTransaction, } from "./wallet";
+import * as cors from "cors"
 
 const app = express();
+
 const port = process.env.PORT || 3001;
 
 app.use(express.json());
+app.use(cors())
 const TransactionSchema = z.object({
    to: z.string(),
    data: z.string(),
