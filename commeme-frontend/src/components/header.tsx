@@ -23,7 +23,7 @@ export default function Header() {
   return (
     <div className="py-2 px-4 w-full flex justify-between items-center">
       <Avatar className="h-16 w-16">
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarImage src="/logo.png" alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       {/* <NavbarHeader/> */}
