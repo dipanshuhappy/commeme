@@ -69,7 +69,7 @@ export default function Hero() {
 <CardContainer className="inter-var">
 <CardBody className="relative   dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-orange-500 dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-3 border bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500  ">
 <CardItem  translateZ="100" className="w-full rounded-md">
-  <img src="https://vitalik.eth.limo/images/dc/meme.jpeg" alt="Commeme Logo"/>
+  <img src="/meme.jpeg" alt="Commeme Logo"/>
 </CardItem>
 </CardBody>
 </CardContainer>

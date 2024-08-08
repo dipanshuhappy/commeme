@@ -1,7 +1,7 @@
 
 import './App.css'
 import {  Route, Switch } from "wouter";
-// import MemeDiv from './components/meme-template';
+import MemeDiv from './components/meme-template';
 import Hero from './components/hero';
 import Advanced from './components/explore';
 import Explore from './components/explore';
@@ -17,7 +17,7 @@ function App() {
     */}
     <Switch>
       <Route path='/' component={Hero} />
-      {/* <Route path="/meme-template" component={MemeDiv} /> */}
+      <Route path="/meme-template" component={MemeDiv} />
 
       <Route path="/users/:name">
         {(params) => <>Hello, {params.name}!</>}
