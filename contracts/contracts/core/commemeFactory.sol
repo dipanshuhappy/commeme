@@ -19,6 +19,7 @@ contract CommemeFactory {
         address _factoryContractAddress,
         address _router,
         address _wCoreAddress,
+        address _legacy,
         uint256 _price
     ) external returns (address) {
         Commeme newCommeme = new Commeme(
@@ -30,6 +31,7 @@ contract CommemeFactory {
             _factoryContractAddress,
             _router,
             _wCoreAddress,
+            _legacy,
             _price
         );
 

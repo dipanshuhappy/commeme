@@ -1,16 +1,13 @@
 //SPDX-License-Identifier: MIT
 
 
-import "../../helperContracts/ierc20_permit.sol";
+import "../helperContracts/ierc20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "../../helperContracts/safemath.sol";
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
+import "../helperContracts/safemath.sol";
 import "./erc20Meme.sol";
-import "../../helperContracts/wcore_interface.sol";
+import "../helperContracts/wcore_interface.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 pragma solidity ^0.8.19;
 
@@ -43,10 +40,11 @@ contract Commeme {
 
     uint256 public price;
 
-    error AETS();    
-    IUniswapV3Factory public uniswapV3Factory;
+    address public legacy;
 
-    event CommemeCreated(address indexed sender,string metadata ,uint256 threshold,string name,string symbol, uint256 price,uint256 totalSupply);
+    error AETS();
+
+    event CommemeCreated(address indexed sender,string metadata ,uint256 threshold,string name,string symbol,uint256 totalSupply);
     event PoolCreated(address indexed poolAddress, address tokenA, address tokenB);
     event TokenDeployed(address indexed tokenAddress, string tokenName, string tokenSymbol, uint256 totalSupply);
     event LiquidityAdded(address tokenA, address tokenB, uint256 amountA, uint256 amountB);
@@ -77,6 +75,7 @@ contract Commeme {
         address _factoryContractAddress,
         address _router,
         address _wCoreAddress,
+        address _legacy,
         uint256 _price
     ) {
         memeDetails = MemeDetails({
@@ -86,6 +85,7 @@ contract Commeme {
             tokenAddress: 0x0000000000000000000000000000000000000000,
             owner: _sender
         });
+        _legacy = legacy;
         timeToClose = block.timestamp + 1440 minutes;
         threshold = _threshold;
         _wcore = IWCORE(_wCoreAddress);
@@ -96,7 +96,7 @@ contract Commeme {
         // corePriceAggregator = AggregatorV3Interface(_corePriceAggregator);
         isActive = true;
 
-        emit CommemeCreated( _sender,_metadata, _threshold, _factoryContractAddress, _wCoreAddress, _router, _price);
+        emit CommemeCreated( _sender,_metadata, _threshold, _name,_symbol,_totalSupply);
     }
 
     function earlyDonations(address _sender, uint256 _amount) public payable {
@@ -120,6 +120,9 @@ contract Commeme {
                 _createPool(address(_wcore) , memeDetails.tokenAddress, factoryContractAddress);
                 emit PoolCreated(poolAddress, address(_wcore), memeDetails.tokenAddress);
                 _meme = IERC20Permit(memeDetails.tokenAddress);
+                uint256 _legacyAmount = (donationAmount.mul(10)).div(100);
+                payable(legacy).transfer(_legacyAmount);
+                donationAmount = donationAmount.sub(_legacyAmount);
                 _wcore.deposit{value: donationAmount}();
                 uint256 toLiquidity =  (memeDetails.totalSupply.mul(70)).div(100);
                 uint256 forAirDrop = memeDetails.totalSupply.sub(toLiquidity);
