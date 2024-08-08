@@ -50,8 +50,6 @@ templates:
                 handler: handlePoolCreated
               - event: TokenDeployed(indexed address,string,string,uint256)
                 handler: handleTokenDeployed
-              - event: LiquidityAdded(address,address,uint256,uint256)
-                handler: handleLiquidityAdded
               - event: Donation(bool,uint256,uint256,uint256,address,address)
                 handler: handleDonation
               

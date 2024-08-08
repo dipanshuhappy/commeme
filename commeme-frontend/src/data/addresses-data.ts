@@ -15,7 +15,7 @@ export const CONSTANT_ADDRESSES = {
         factoryAddress: "0xB45e53277a7e0F1D35f2a77160e91e25507f1763",
         routerAddress: "0x9B3336186a38E1b6c21955d112dbb0343Ee061eE",
         wrapAddress: "0x191e94fa59739e188dce837f7f6978d84727ad01",
-        commemeFactory: "0x",
+        commemeFactory: "0xf6655Af4A47cB6705Ae73EE0c8FAb6A1469d771c",
         scanner:"https://scan.coredao.org",
         graphql: "https://api.studio.thegraph.com/query/85941/commeme-testnet/version/latest",
         tokenName: "CORE",
