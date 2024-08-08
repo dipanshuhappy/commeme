@@ -1,8 +1,11 @@
 // import React from 'react'
-import { HeroHighlight,Highlight } from './ui/hero-highlight.tsx'
-import { motion } from 'framer-motion'
-import { CardBody, CardContainer, CardItem } from './ui/3d-card.tsx'
+import { HeroHighlight, Highlight } from "./ui/hero-highlight.tsx";
+import { motion } from "framer-motion";
+import { CardBody, CardContainer, CardItem } from "./ui/3d-card.tsx";
+import { If } from "react-if";
+
 // import { Boxes } from './ui/background-boxes.tsx'
+
 import { Modal, ModalBody, ModalContent, ModalTrigger } from './ui/animated-modal.tsx'
 // import { Button } from './ui/button.tsx'
 // import { LampContainer } from './ui/lamp.tsx'
@@ -10,9 +13,22 @@ import CreateMemeForm from './create-meme-form.tsx'
 import { StickyScrollRevealDemo } from './features.tsx'
 // import FeaturesSectionDemo from './blocks/features-section-demo-1.tsx'
 // import { FeaturesSectionDemo } from './features.tsx'
+
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalTrigger,
+} from "./ui/animated-modal.tsx";
+import CreateMemeForm from "./create-meme-form.tsx";
+import { useAccount, useConnect } from "wagmi";
+
+
 export default function Hero() {
+  const { isConnected } = useAccount()
   return (
     <>
+
     {/* <Boxes/> */}
     
  <HeroHighlight className='dark'>
@@ -79,6 +95,8 @@ export default function Hero() {
 
  <StickyScrollRevealDemo/>
 
-</>
-  )
+
+      {/* <FeaturesSectionDemo/> */}
+    </>
+  );
 }

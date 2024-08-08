@@ -1,6 +1,6 @@
-import {createConfig} from '@privy-io/wagmi';
-import { http } from 'wagmi';
-import { Chain, mainnet, polygonAmoy, sepolia } from 'wagmi/chains';
+
+import { http ,createConfig} from 'wagmi';
+import { Chain, coreDao, mainnet, polygon, polygonAmoy, sepolia } from 'wagmi/chains';
 
 
 export const coreDaoTestnet = {
@@ -25,10 +25,10 @@ export const coreDaoTestnet = {
 } as const satisfies Chain;
 
 export const config = createConfig({
-  chains: [coreDaoTestnet, polygonAmoy], // Pass your required chains as an array
+  chains: [coreDao, polygon], // Pass your required chains as an array
   transports: {
-    [coreDaoTestnet.id]: http(),
-    [polygonAmoy.id]: http(),
+    [coreDao.id]: http(),
+    [polygon.id]: http(),
     // For each of your required chains, add an entry to `transports` with
     // a key of the chain's `id` and a value of `http()`
   },

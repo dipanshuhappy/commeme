@@ -1,61 +1,59 @@
 //SPDX-License-Identifier: MIT
 
-// import "../../helperContracts/erc20.sol";
-// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "../../helperContracts/ierc20_permit.sol";
+
+import "../helperContracts/ierc20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "../../helperContracts/safemath.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
-import "./ERC20MemeToken.sol";
-import "../../helperContracts/wcore_interface.sol";
+import "../helperContracts/safemath.sol";
+import "./erc20Meme.sol";
+import "../helperContracts/wcore_interface.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
-// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 pragma solidity ^0.8.19;
 
-interface Pair {
+interface Pool {
     function createPair(address tokenA, address tokenB) external returns(address);
 }
+
 
 contract Commeme {
     address[] public donators;
     mapping(address => uint256) public donatorsAmount;
     uint256 public donationAmount;
     mapping(address => bool) public isDonator;
-    uint256 private minAmountToKeepAlive;
     bool public isActive;
     uint256 public timeToClose;
     uint256 public threshold;
     bool public poolCreated;
-    mapping(uint256 => int24) public feeAmountTickSpacing;
     mapping(address => mapping(address => mapping(uint24 => address))) public getPool;
-    address private wrapCoreAddress;
     address private factoryContractAddress;
     IWCORE private _wcore;
-    ISwapRouter public immutable swapRouter;
     IUniswapV2Router02 public immutable IUniswapV2Router;
-    IUniswapV3Pool public  wCorePool;
     IERC20Permit private _meme;
     address public ROUTER;
+    // AggregatorV3Interface public immutable corePriceAggregator;
 
     using SafeMath for uint256;
+    address public poolAddress;
 
-    error AETS();    
-    IUniswapV3Factory public uniswapV3Factory;
-    // IUniswapV2Factory public 
-    ISwapRouter public uniswapRouter;
+    string public metadata;
+
+    uint256 public price;
+
+    address public legacy;
+
+    error AETS();
+
+    event CommemeCreated(address indexed sender,string metadata ,uint256 threshold,string name,string symbol,uint256 totalSupply);
+    event PoolCreated(address indexed poolAddress, address tokenA, address tokenB);
+    event TokenDeployed(address indexed tokenAddress, string tokenName, string tokenSymbol, uint256 totalSupply);
+    event LiquidityAdded(address tokenA, address tokenB, uint256 amountA, uint256 amountB);
+    event Donation(bool isActive, uint256 totalDonationAmount, uint256 currentDonation,uint256 timeToClose,address token,address donor);
 
     struct MemeDetails {
         string name;
         string symbol;
         uint256 totalSupply;
-        uint256 circulatingSupply;
-        uint256 availableSupply;
         address tokenAddress;
         address owner;
     }
@@ -71,90 +69,97 @@ contract Commeme {
         address _sender, 
         string memory _name, 
         string memory _symbol, 
+        string memory _metadata,
         uint256 _totalSupply, 
         uint256 _threshold,
-        address _wrapCoreAddress, 
         address _factoryContractAddress,
-        address _swapRouter, 
         address _router,
-        address _wCorePoolAddress,
-        address _wCoreAddress
+        address _wCoreAddress,
+        address _legacy,
+        uint256 _price
     ) {
         memeDetails = MemeDetails({
             name: _name,
             symbol: _symbol,
             totalSupply: _totalSupply,
-            circulatingSupply: 0,
-            availableSupply: _totalSupply,
             tokenAddress: 0x0000000000000000000000000000000000000000,
             owner: _sender
         });
+        _legacy = legacy;
         timeToClose = block.timestamp + 1440 minutes;
         threshold = _threshold;
-        minAmountToKeepAlive = 100000000000;
-        feeAmountTickSpacing[10000] = 200;
-        wrapCoreAddress = _wrapCoreAddress;
         _wcore = IWCORE(_wCoreAddress);
-        swapRouter = ISwapRouter(_swapRouter);
         ROUTER = _router;
-        wCorePool = IUniswapV3Pool(_wCorePoolAddress);
+        price = _price;
+        metadata = _metadata;
         factoryContractAddress = _factoryContractAddress;
+        // corePriceAggregator = AggregatorV3Interface(_corePriceAggregator);
         isActive = true;
+
+        emit CommemeCreated( _sender,_metadata, _threshold, _name,_symbol,_totalSupply);
     }
 
-    function earlyDonations() public payable {
+    function earlyDonations(address _sender, uint256 _amount) public payable {
         if(donationAmount >= threshold) revert("ATR"); // ATR - Already Threshold Reaches
         if(donationAmount < threshold && block.timestamp >= timeToClose) {
             _refundIfNotActive();
         } else {
-            uint256 _amount = msg.value;
-            if(!isDonator[msg.sender]) {
-                donators.push(msg.sender);
-                isDonator[msg.sender] = true;
-                donatorsAmount[msg.sender] = donatorsAmount[msg.sender].add(_amount);
+            // uint256 _amount = msg.value;
+            if(!isDonator[_sender]) {
+                donators.push(_sender);
+                isDonator[_sender] = true;
+                donatorsAmount[_sender] = donatorsAmount[_sender].add(_amount);
                 donationAmount = donationAmount.add(_amount);
             } else {
-                donatorsAmount[msg.sender] = donatorsAmount[msg.sender].add(_amount);
+                donatorsAmount[_sender] = donatorsAmount[_sender].add(_amount);
                 donationAmount = donationAmount.add(_amount);
             }
             if(donationAmount >= threshold) {
                 _deployToken();
-                _createPool(wrapCoreAddress , memeDetails.tokenAddress, factoryContractAddress);
+                emit TokenDeployed(memeDetails.tokenAddress, memeDetails.name, memeDetails.symbol, memeDetails.totalSupply);
+                _createPool(address(_wcore) , memeDetails.tokenAddress, factoryContractAddress);
+                emit PoolCreated(poolAddress, address(_wcore), memeDetails.tokenAddress);
                 _meme = IERC20Permit(memeDetails.tokenAddress);
-                _wcore.deposit{value: address(this).balance};
+                uint256 _legacyAmount = (donationAmount.mul(10)).div(100);
+                payable(legacy).transfer(_legacyAmount);
+                donationAmount = donationAmount.sub(_legacyAmount);
+                _wcore.deposit{value: donationAmount}();
                 uint256 toLiquidity =  (memeDetails.totalSupply.mul(70)).div(100);
                 uint256 forAirDrop = memeDetails.totalSupply.sub(toLiquidity);
-                _addLiquidity(wrapCoreAddress, memeDetails.tokenAddress, toLiquidity, donationAmount);
+                _addLiquidity(toLiquidity, _wcore.balanceOf(address(this)));
+                emit LiquidityAdded(address(_wcore), memeDetails.tokenAddress, toLiquidity, donationAmount);
                 _transferTokens(forAirDrop);
             }
-            timeToClose = timeToClose.add(60 minutes);
+            // (, int256 latestPrice , , ,)  = corePriceAggregator.latestRoundData();
+            uint256 minutesToAdd = ((price.mul(_amount)).mul(60));
+            timeToClose = timeToClose.add((minutesToAdd.mul(1 minutes)));
         }
     }
 
     function _createPool(address token0, address token1, address _factory) private returns(address){
         require(token0 != token1, "Cannot create a pool with the same token");
-        Pair pair = Pair(_factory);
-        address pairAddress = pair.createPair(token0, token1);
-        return pairAddress;
+        Pool pool = Pool(_factory);
+        poolAddress = pool.createPair(token0, token1);
+        return poolAddress;
     }
 
-    function _addLiquidity(address _tokenA, address _tokenB, uint256 _amountA, uint256 _amountB) private {
-        _meme.transferFrom(msg.sender, address(this), _amountA);
-        _wcore.transferFrom(msg.sender, address(this), _amountB);
+    function _addLiquidity(uint256 _amountmeme, uint256 _amountCoin) private returns(uint256, uint256, uint256) {
 
-        _meme.approve(ROUTER, _amountA);
-        _wcore.approve(ROUTER, _amountB);
+        _meme.approve(ROUTER, _amountmeme);
+        _wcore.approve(ROUTER, _amountCoin);
 
         (uint256 amountA, uint256 amountB, uint256 liquidity) = IUniswapV2Router02(ROUTER).addLiquidity(
-            _tokenA,
-            _tokenB,
-            _amountA,
-            _amountB,
+            address(_meme),
+            address(_wcore),
+            _amountmeme,
+            _amountCoin,
             1,
             1,
             address(this),
             block.timestamp
         );
+
+        return(amountA, amountB, liquidity);
     }
 
 
@@ -169,6 +174,7 @@ contract Commeme {
 
     function _deployToken() private {
         require(memeDetails.tokenAddress == 0x0000000000000000000000000000000000000000, "Token already deployed");
+
 
         ERC20MemeToken token = new ERC20MemeToken(
             memeDetails.name,
@@ -189,6 +195,6 @@ contract Commeme {
     }
 
     receive() external payable {
-        earlyDonations();
+        earlyDonations(msg.sender, msg.value);
     }
 }
