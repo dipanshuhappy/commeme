@@ -197,10 +197,10 @@ export default function SwipeableStackCards({ commemes, chainId }: { commemes: C
                     {shortenAddress(card.creator)}
                   </a>
                   <div className="mt-2">
-                    {card.isActive ? (
+                    {remainingDonation !== 0 ? (
                       <Badge>Active</Badge>
                     ) : (
-                      <Badge variant="destructive">Deadline</Badge>
+                    <Badge variant="destructive">Dead</Badge>
                     )}
                   </div>
                   <div className="mt-2">
