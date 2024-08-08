@@ -2,7 +2,8 @@
 
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import React, { useState } from "react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardFooter } from "@/components/ui/card";
+import { Button } from "../ui/button";
 // import Image from "next/image";
 
 interface CardRotateProps {
@@ -39,7 +40,7 @@ function SwipeCard({
 
   return (
     <motion.div
-      className="absolute cursor-grab left-1/2 top-1/2  "
+      className="absolute cursor-grab left-1/2 top-1/2 w-[50%] h-[60%] "
       initial={{
         translateX: "-50%",
         translateY: "-50%",
@@ -147,15 +148,30 @@ export default function SwipeableStackCards() {
               initial={false}
               transition={{ type: "spring", stiffness: 160, damping: 8 }}
             >
-              <Card className="h-80 w-78">
-                <CardContent>
-                  <h2 className="text-lg">{card.companyName}</h2>
-                </CardContent>
-                <CardContent>
-                  <p className="text-base">{card.testimonial}</p>
-                </CardContent>  
+              <Card className="h-full w-full">
+                <div>
+                <img
+                      src={card.image}
+                      alt={card.personName}
+                      className="w-full h-[200px]  object-cover"
+                      width={120}
+                      height={100}
+                    />
+                </div>
+                <div>
+                  {/* <h2 className="text-lg">{card.companyName}</h2> */}
+                  <div className=" p-5">
+                      <h3 className=" font-semibold">
+                        {card.personName}
+                      </h3>
+                      <p className="text-xs">{card.profession}</p>
+                    </div>
+                </div>
+               
+                  <p className="px-6 ">{card.testimonial}</p>
+             
                 <CardFooter>
-                  <div className="flex items-center">
+                  {/* <div className="flex items-center">
                     <img
                       src={card.image}
                       alt={card.personName}
@@ -168,8 +184,11 @@ export default function SwipeableStackCards() {
                         {card.personName}
                       </h3>
                       <p className="text-xs">{card.profession}</p>
-                    </div>
-                  </div>
+                    </div> */}
+                  {/* </div> */}
+                  <Button className="mt-3 w-full">
+                    Donate
+                  </Button>
                 </CardFooter>
               </Card>
             </motion.div>
