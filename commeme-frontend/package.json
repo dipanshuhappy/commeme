@@ -44,6 +44,8 @@
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.167.1",
     "three-globe": "^2.31.1",
+    "utils": "link:@types/viem/utils",
+    "viem": "^2.19.2",
     "wagmi": "^2.12.2",
     "wouter": "^3.3.1"
   },
