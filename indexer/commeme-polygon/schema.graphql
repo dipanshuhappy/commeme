@@ -81,7 +81,7 @@ type Commeme @entity {
   tokenAddress: Bytes!
   metadata: String!
   poolAddress: String!
-  totlDonation: BigInt!a
+  totalDonation: BigInt!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

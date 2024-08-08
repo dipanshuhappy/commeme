@@ -56,6 +56,9 @@ export function handleDonation(event: DonationEvent): void {
   entity.transactionHash = event.transaction.hash
 
   let entityComme = Commeme.load(event.address.toString())
+  if(!entityComme){
+    throw Error("entity not found")
+  }
   entityComme.isActive = event.params.isActive;
   entityComme.totalDonation = event.params.totalDonationAmount;
   entity.timeToClose = event.params.timeToClose;
@@ -76,6 +79,9 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
   entity.transactionHash = event.transaction.hash
 
   let entityComme = Commeme.load(event.address.toString())
+  if(!entityComme){
+    throw Error("Error entity")
+  }
   entityComme.poolAddress = event.params.poolAddress.toHexString();
 
 
@@ -96,6 +102,9 @@ export function handleTokenDeployed(event: TokenDeployedEvent): void {
   entity.save()
 
   let commeEntity = Commeme.load(event.address.toString())
+  if(!commeEntity){
+    throw Error("Error entity")
+  }
   commeEntity.tokenAddress = event.params.tokenAddress;
   commeEntity.name = event.params.tokenName;
   commeEntity.symbol = event.params.tokenSymbol;
