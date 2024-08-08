@@ -6,3 +6,36 @@ type CommemeCreated @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
+
+
+type PoolCreated @entity {
+  id: ID!
+  poolAddress: Bytes! # address
+  tokenA: Bytes! # address
+  tokenB: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TokenDeployed @entity {
+  id: ID!
+  tokenAddress: Bytes! # address
+  tokenName: String!
+  tokenSymbol: String!
+  totalSupply: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type LiquidityAdded @entity {
+  id: ID!
+  tokenA: Bytes! # address
+  tokenB: Bytes! # address
+  amountA: BigInt!
+  amountB: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
