@@ -1,0 +1,1 @@
+export const COMMEME_ABI = []
