@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@anon-aadhaar/core": "^2.4.0",
+    "@anon-aadhaar/react": "^2.4.0",
     "@privy-io/react-auth": "^1.77.0",
     "@privy-io/wagmi": "^0.2.12",
     "@radix-ui/react-avatar": "^1.1.0",
@@ -34,8 +36,8 @@
     "mini-svg-data-uri": "^1.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-tinder-card": "^1.6.4",
     "react-if": "^4.1.5",
+    "react-tinder-card": "^1.6.4",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.167.1",

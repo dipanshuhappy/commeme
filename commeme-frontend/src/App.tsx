@@ -5,6 +5,7 @@ import MemeDiv from './components/meme-template';
 import Hero from './components/hero';
 import Advanced from './components/explore';
 import Explore from './components/explore';
+import Anon from './components/anon-aadhar';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     <Switch>
       <Route path='/' component={Hero} />
       <Route path="/meme-template" component={MemeDiv} />
+      <Route path="/anon" component={Anon} />
 
       <Route path="/users/:name">
         {(params) => <>Hello, {params.name}!</>}
