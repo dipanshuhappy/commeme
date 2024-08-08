@@ -119,4 +119,4 @@ export const COMMEME_FACTORY_ABI = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-]
+] as const

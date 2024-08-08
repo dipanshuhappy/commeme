@@ -2,11 +2,18 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { Link } from "wouter";
-
+import { Link, useLocation } from "wouter";
+import { toast } from "sonner";
+import {encodeFunctionData} from "viem/utils"
+import { COMMEME_FACTORY_ABI } from "@/data/commeme-factory-abi";
+import { createJsonFile, storeFiles } from "@/lib/utils";
+import { useAccount, useChainId } from "wagmi";
+import { CONSTANT_ADDRESSES } from "@/data/addresses-data";
+import { TransactionToast } from "./ui/transaction-toast";
 
 
 export default function CreateMemeForm() {
+  const { address} = useAccount();
   const [loading, setLoading] = useState(false);
   const [memeName, setMemeName] = useState("");
   const [memeDescription, setMemeDescription] = useState("");
@@ -14,6 +21,7 @@ export default function CreateMemeForm() {
   const [totalSupply, setTotalSupply] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const chainId = useChainId()
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -31,6 +39,90 @@ export default function CreateMemeForm() {
 
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedImage]);
+
+  const [location,setLocation] = useLocation()
+
+  const onDeploy = async () =>{
+    setLoading(true)
+    const loadingToast = toast.loading("Deploying meme")
+    try{
+      if(!selectedImage){
+        throw new Error("Please select an image")
+      }
+      if(!memeName){
+        throw new Error("Please enter a meme name")
+      }
+      if(!address){
+        throw new Error("Please connect your wallet")
+      }
+      
+      if(!CONSTANT_ADDRESSES[chainId as keyof typeof CONSTANT_ADDRESSES]){
+        throw new Error("Invalid chain id")
+      }
+      const addresses = CONSTANT_ADDRESSES[chainId as keyof typeof CONSTANT_ADDRESSES]
+      const imageUrl = await storeFiles([selectedImage])
+      console.log(imageUrl,"image url")
+      const metadataJson = createJsonFile({
+        descrption:memeDescription,
+        image:imageUrl,
+        title:memeName
+      })
+      console.log(metadataJson,"metadata")  
+      const metadataUrl = await storeFiles([metadataJson])
+      console.log({metadataUrl})
+
+
+
+
+      const rawData = encodeFunctionData({
+        abi:COMMEME_FACTORY_ABI,
+        functionName:"createCommeme",
+        args:[
+          address,
+          memeName,
+          memeSymbol,
+          metadataUrl,
+          BigInt(parseFloat(totalSupply) * 10**18),
+          BigInt(500000000000000000),
+          addresses.factoryAddress,
+          addresses.routerAddress,
+          addresses.wrapAddress,
+          "0x8b5E4bA136D3a483aC9988C20CBF0018cC687E6f",
+          BigInt(100000000000)
+        ]
+      })
+
+      console.log(rawData,"raw data")
+      console.log(`${import.meta.env.VITE_RELAY}/transaction`)
+      const res = await fetch(`${import.meta.env.VITE_RELAY}/transaction`,{
+        body:JSON.stringify({
+          to: addresses.commemeFactory,
+          data: rawData,
+          value: 0,
+          chainId: chainId
+        }),
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        }
+      })
+
+      const responseJson = res.json() as unknown as {hash:string};
+      toast.success(<TransactionToast hash={responseJson.hash} title="Commeme Deployed" scanner={`${addresses.scanner}/tx/`} />)
+      setLocation("/explore")
+
+    } 
+    catch(e){
+      console.error(e)
+      toast.error("Error deploying meme")
+      toast.error((e as any).message)
+
+    }
+    finally{
+      toast.dismiss(loadingToast)
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="flex flex-col justify-center items-center overflow-x-scroll">
@@ -99,7 +191,7 @@ export default function CreateMemeForm() {
         <Link href="/meme-template" className="text-blue-500 underline">
           Use our meme template
         </Link>
-        <Button className="mt-2">Create a meme</Button>
+        <Button className="mt-2" onClick={onDeploy}>{loading ? "Loading" :"Create a meme" }</Button>
       </div>
     </div>
   );
