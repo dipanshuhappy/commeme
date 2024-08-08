@@ -17,6 +17,11 @@
 				"type": "string"
 			},
 			{
+				"internalType": "string",
+				"name": "_metadata",
+				"type": "string"
+			},
+			{
 				"internalType": "uint256",
 				"name": "_totalSupply",
 				"type": "uint256"
@@ -42,6 +47,11 @@
 				"type": "address"
 			},
 			{
+				"internalType": "address",
+				"name": "_legacy",
+				"type": "address"
+			},
+			{
 				"internalType": "uint256",
 				"name": "_price",
 				"type": "uint256"
@@ -61,14 +71,14 @@
 			{
 				"indexed": true,
 				"internalType": "address",
-				"name": "contractAddress",
+				"name": "sender",
 				"type": "address"
 			},
 			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
+				"indexed": false,
+				"internalType": "string",
+				"name": "metadata",
+				"type": "string"
 			},
 			{
 				"indexed": false,
@@ -78,30 +88,67 @@
 			},
 			{
 				"indexed": false,
-				"internalType": "address",
-				"name": "factoryContractAddress",
-				"type": "address"
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
 			},
 			{
 				"indexed": false,
-				"internalType": "address",
-				"name": "wCoreAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "router",
-				"type": "address"
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
 			},
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "price",
+				"name": "totalSupply",
 				"type": "uint256"
 			}
 		],
 		"name": "CommemeCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalDonationAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "currentDonation",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timeToClose",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "donor",
+				"type": "address"
+			}
+		],
+		"name": "Donation",
 		"type": "event"
 	},
 	{
@@ -349,6 +396,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "legacy",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "memeDetails",
 		"outputs": [
 			{
@@ -375,6 +435,19 @@
 				"internalType": "address",
 				"name": "owner",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "metadata",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -440,19 +513,6 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "uniswapV3Factory",
-		"outputs": [
-			{
-				"internalType": "contract IUniswapV3Factory",
-				"name": "",
-				"type": "address"
 			}
 		],
 		"stateMutability": "view",

@@ -7,6 +7,33 @@ type CommemeCreated @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
+type CommemeRegistered @entity {
+  id: ID!
+  sender: Bytes! # address
+  metadata: String!
+  threshold: BigInt!
+  name: String!
+  symbol: String!
+  totalSupply: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+
+type Donation @entity {
+  id: ID!
+  isActive: Boolean!
+  totalDonationAmount: BigInt!
+  currentDonation: BigInt!
+  timeToClose: BigInt!
+  token: Bytes! # address
+  donor: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
 
 type PoolCreated @entity {
   id: ID!
@@ -35,6 +62,26 @@ type LiquidityAdded @entity {
   tokenB: Bytes! # address
   amountA: BigInt!
   amountB: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+
+type Commeme @entity {
+  id: ID!
+  commemeAddress: Bytes! # address
+  creator: Bytes! # address
+  isActive: Boolean!
+  timeToClose: BigInt!
+  threshold: BigInt!
+  totalSupply: BigInt!
+  name: String!
+  symbol: String!
+  tokenAddress: Bytes!
+  metadata: String!
+  poolAddress: String!
+  totlDonation: BigInt!a
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

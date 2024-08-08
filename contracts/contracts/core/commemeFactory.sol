@@ -26,6 +26,7 @@ contract CommemeFactory {
             _sender,
             _name,
             _symbol,
+            _metadata,
             _totalSupply,
             _threshold,
             _factoryContractAddress,
