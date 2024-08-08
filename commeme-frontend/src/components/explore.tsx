@@ -9,11 +9,13 @@
 // import Head from "next/head";
 
 import ExpandableCardDemo from "./blocks/expandable-card-demo-grid";
+import SwipeableStackCards from "./gesturs/swipe-card";
 
 export default function Explore() {
   return(
- <div className="">
-<ExpandableCardDemo/>
+ <div className="w-full h-full flex justify-center items-center">
+{/* <ExpandableCardDemo/> */}
+<SwipeableStackCards />
  </div>
 );
 };

@@ -82,12 +82,12 @@ const MemeDiv = () => {
 					maxHeight: '50vh',
 					maxWidth: '50vw',
 				}}>
-				<h4 style={{ color: selectedColor, padding: 0, fontWeight: 600 }}>
+				<h1 style={{ color: selectedColor, padding: 0, fontWeight: 600 }}>
 					{topText}
-				</h4>
-				<h4 style={{ color: selectedColor, padding: 0, fontWeight: 600 }}>
+				</h1>
+				<h2 style={{ color: selectedColor, padding: 0, fontWeight: 600 }}>
 					{bottomText}
-				</h4>
+				</h2>
 			</div>
 
 			{/* display a color picker with 5 color options */}
