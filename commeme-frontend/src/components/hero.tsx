@@ -24,7 +24,6 @@ import {
 // import { Button } from './ui/button.tsx'
 // import { LampContainer } from './ui/lamp.tsx'
 import CreateMemeForm from "./create-meme-form.tsx";
-import { StickyScrollRevealDemo } from "./features.tsx";
 // import FeaturesSectionDemo from './blocks/features-section-demo-1.tsx'
 // import { FeaturesSectionDemo } from './features.tsx'
 

@@ -14,8 +14,9 @@ export function handleCommemeCreated(event: CommemeCreatedEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  
 
-  let entityCommeme = new Commeme(event.address.toString())
+  let entityCommeme = new Commeme(event.address.toHexString())
   entityCommeme.creator = event.params.sender;
   entityCommeme.metadata = event.params.metadata;
   entityCommeme.threshold = event.params.threshold;
@@ -26,14 +27,13 @@ export function handleCommemeCreated(event: CommemeCreatedEvent): void {
   entityCommeme.blockTimestamp = event.block.timestamp;
   entityCommeme.transactionHash = event.transaction.hash;
   
-  entityCommeme.timeToClose = BigInt.fromString((parseFloat(event.block.timestamp.toString()) + (1440 * 60)).toString());
+  entityCommeme.timeToClose = event.block.timestamp.plus(BigInt.fromI32(86400))
 
   entityCommeme.tokenAddress = Bytes.fromHexString("0x0000000000000000000000000000000000000000")
-
   entityCommeme.totalDonation = BigInt.fromI32(0)
 
-  entityCommeme.commemeAddress = Bytes.fromHexString(event.address.toString());
-  entityCommeme.isActive = false;
+  entityCommeme.commemeAddress = Bytes.fromHexString(event.address.toHexString())
+  entityCommeme.isActive = true;
   entityCommeme.poolAddress = "0x0000000000000000000000000000000000000000";
 
   entityCommeme.save()
@@ -57,7 +57,7 @@ export function handleDonation(event: DonationEvent): void {
 
   let entityComme = Commeme.load(event.address.toString())
   if(!entityComme){
-    throw Error("entity not found")
+    throw new Error("entity not found")
   }
   entityComme.isActive = event.params.isActive;
   entityComme.totalDonation = event.params.totalDonationAmount;
@@ -80,7 +80,7 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
 
   let entityComme = Commeme.load(event.address.toString())
   if(!entityComme){
-    throw Error("Error entity")
+    throw new Error("Error entity")
   }
   entityComme.poolAddress = event.params.poolAddress.toHexString();
 
@@ -103,7 +103,7 @@ export function handleTokenDeployed(event: TokenDeployedEvent): void {
 
   let commeEntity = Commeme.load(event.address.toString())
   if(!commeEntity){
-    throw Error("Error entity")
+    throw new Error("Error entity")
   }
   commeEntity.tokenAddress = event.params.tokenAddress;
   commeEntity.name = event.params.tokenName;
