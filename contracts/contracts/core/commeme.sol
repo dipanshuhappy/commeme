@@ -120,9 +120,6 @@ contract Commeme {
                 _createPool(address(_wcore) , memeDetails.tokenAddress, factoryContractAddress);
                 emit PoolCreated(poolAddress, address(_wcore), memeDetails.tokenAddress);
                 _meme = IERC20Permit(memeDetails.tokenAddress);
-                uint256 _legacyAmount = (donationAmount.mul(10)).div(100);
-                payable(legacy).transfer(_legacyAmount);
-                donationAmount = donationAmount.sub(_legacyAmount);
                 _wcore.deposit{value: donationAmount}();
                 uint256 toLiquidity =  (memeDetails.totalSupply.mul(70)).div(100);
                 uint256 forAirDrop = memeDetails.totalSupply.sub(toLiquidity);

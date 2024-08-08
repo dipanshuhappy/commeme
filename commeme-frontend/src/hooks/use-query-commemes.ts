@@ -28,6 +28,7 @@ export const useQueryCommemes = (chainId:SupportChainId) => {
   return useQuery({
 
     queryKey: ['commemes'],
+    refetchInterval: 7000,
 
     async queryFn() {
         const result = await request<CommemeQueryResult>(CONSTANT_ADDRESSES[chainId].graphql, query);

@@ -30,12 +30,11 @@ export const sendRawTransaction = async ({key,rpc,to,value,data,chainId}:{key: `
         to,
         value:BigInt(value),
         data,
-        nonce: 300
     })
     await publicClient.waitForTransactionReceipt({
         hash,
         confirmations:1,
-        timeout:15
+        
     })
 
     return hash

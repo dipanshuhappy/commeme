@@ -85,12 +85,12 @@ export default function CreateMemeForm() {
           memeSymbol,
           metadataUrl,
           BigInt(parseFloat(totalSupply) * 10**18),
-          BigInt(500000000000000000),
+          BigInt(1000000000000000),
           addresses.factoryAddress,
           addresses.routerAddress,
           addresses.wrapAddress,
           "0x8b5E4bA136D3a483aC9988C20CBF0018cC687E6f",
-          BigInt(100000000000)
+          BigInt(1)
         ]
       })
 
