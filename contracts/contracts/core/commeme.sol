@@ -133,6 +133,7 @@ contract Commeme {
             // (, int256 latestPrice , , ,)  = corePriceAggregator.latestRoundData();
             uint256 minutesToAdd = ((price.mul(_amount)).mul(60));
             timeToClose = timeToClose.add((minutesToAdd.mul(1 minutes)));
+            emit Donation(isActive, donationAmount, _amount, timeToClose, address(_meme), _sender);
         }
     }
 

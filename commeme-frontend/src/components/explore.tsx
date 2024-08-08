@@ -21,8 +21,8 @@ export default function Explore() {
  <div className="w-full h-full flex justify-center items-center">
       {status === 'pending' ? <div>Loading...</div> : null}
       {status === 'error' ? <div>Error ocurred querying the Subgraph</div> : null}
-      <ExpandableCardDemo commemes={commemes ?? []} />
-{/* <SwipeableStackCards /> */}
+      {/* <ExpandableCardDemo commemes={commemes ?? []} /> */}
+      <SwipeableStackCards commemes={commemes ?? []} chainId={chainId as SupportChainId}/>
  </div>
 );
 };

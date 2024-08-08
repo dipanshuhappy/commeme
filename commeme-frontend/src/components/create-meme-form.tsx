@@ -67,6 +67,8 @@ export default function CreateMemeForm() {
         image:imageUrl,
         title:memeName
       })
+
+      
       console.log(metadataJson,"metadata")  
       const metadataUrl = await storeFiles([metadataJson])
       console.log({metadataUrl})
@@ -110,7 +112,6 @@ export default function CreateMemeForm() {
       const responseJson = await res.json() as unknown as {hash:string};
       toast.success(<TransactionToast hash={responseJson.hash} title="Commeme Deployed" scanner={`${addresses.scanner}/tx/`} />)
       setLocation("/explore")
-
     } 
     catch(e){
       console.error(e)

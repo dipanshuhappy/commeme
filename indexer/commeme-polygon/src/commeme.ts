@@ -55,7 +55,7 @@ export function handleDonation(event: DonationEvent): void {
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
 
-  let entityComme = Commeme.load(event.address.toString())
+  let entityComme = Commeme.load(event.address.toHexString())
   if(!entityComme){
     throw new Error("entity not found")
   }
@@ -101,7 +101,7 @@ export function handleTokenDeployed(event: TokenDeployedEvent): void {
   entity.transactionHash = event.transaction.hash
   entity.save()
 
-  let commeEntity = Commeme.load(event.address.toString())
+  let commeEntity = Commeme.load(event.address.toHexString())
   if(!commeEntity){
     throw new Error("Error entity")
   }

@@ -28,6 +28,7 @@ import CreateMemeForm from "./create-meme-form.tsx";
 // import { FeaturesSectionDemo } from './features.tsx'
 
 import { useAccount, useConnect } from "wagmi";
+import { StickyScrollRevealDemo } from "./features.tsx";
 
 export default function Hero() {
   const { isConnected } = useAccount();

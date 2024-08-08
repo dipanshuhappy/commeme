@@ -1,10 +1,20 @@
-
-
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import React, { useState } from "react";
 import { Card, CardFooter } from "@/components/ui/card";
 import { Button } from "../ui/button";
-// import Image from "next/image";
+import { Commeme } from "@/lib/types";
+import { shortenAddress } from "@/lib/utils";
+import { formatEther,parseEther } from "viem/utils";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { SupportChainId, useQueryCommemes } from "@/hooks/use-query-commemes";
+import { CONSTANT_ADDRESSES } from "@/data/addresses-data";
+// import { useSendTransaction } from "wagmi";
+import { toast } from "sonner";
+import { TransactionToast } from "../ui/transaction-toast";
+import { sendTransaction} from 'wagmi/actions'
+import { config } from "@/lib/config";
+import { useAccount, useChainId, useSendTransaction, useSwitchChain, useWalletClient } from "wagmi";
 
 interface CardRotateProps {
   index: number;
@@ -25,6 +35,8 @@ function SwipeCard({
   const y = useMotionValue(0);
   const scale = useTransform(x, [-100, 100], [0.9, 1.1]);
   const rotateZ = useTransform(x, [-100, 100], [-20, 20]);
+
+ 
 
   function handleDragEnd(_: any, info: PanInfo) {
     const threshold = 180;
@@ -63,58 +75,20 @@ function SwipeCard({
   );
 }
 
-const testimonials = [
-  {
-    testimonial:
-      "Gesturs has revolutionized our development process. Their UI library is incredibly intuitive and easy to use.",
-    personName: "John Doe",
-    image: "https://images.unsplash.com/photo-1524503033411-c9566986fc8f",
-    profession: "Chief Operating Officer",
-    companyName: "Tech Solutions Inc.",
-  },
-  {
-    testimonial:
-      "I can't imagine working without Gesturs. It has streamlined our workflow and increased our team's collaboration.",
-    personName: "Jane Smith",
-    image: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61",
-    profession: "Project Manager",
-    companyName: "Innovatech Ltd.",
-  },
-  {
-    testimonial:
-      "The support team at Gesturs is outstanding. They were always ready to help and went above and beyond to meet our needs.",
-    personName: "Samuel Green",
-    image:
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?crop=entropy",
-    profession: "Head of Customer Support",
-    companyName: "Customer First Corp.",
-  },
-  {
-    testimonial:
-      "Gesturs has simplified our processes and allowed us to focus on what we do best. It's a fantastic solution.",
-    personName: "Emily Johnson",
-    image: "https://images.unsplash.com/photo-1524503033411-c9566986fc8f",
-    profession: "Operations Manager",
-    companyName: "Business Solutions Co.",
-  },
-  {
-    testimonial:
-      "Gesturs' innovative approach and dedication to quality have truly set them apart in the industry.",
-    personName: "Michael Brown",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    profession: "CEO",
-    companyName: "NextGen Innovations",
-  },
-];
-
-export default function SwipeableStackCards() {
+export default function SwipeableStackCards({ commemes, chainId }: { commemes: Commeme[], chainId: SupportChainId }) {
   const [currentCard, setCurrentCard] = useState(0);
-
+  const [donationAmount, setDonationAmount] = useState<string>("");
+  const chainData = CONSTANT_ADDRESSES[chainId];
+  const account = useAccount()
+  const query = useQueryCommemes(chainId as SupportChainId);
+  const  { switchChainAsync } = useSwitchChain()
+  const wallet = useWalletClient()
+  const currentChainId = useChainId()
   const swipeLeft = (index: number) => {
     if (index !== currentCard) {
       setCurrentCard(index);
     }
-    if (currentCard === testimonials.length - 1) return;
+    if (currentCard === commemes.length - 1) return;
     setCurrentCard((prev) => prev + 1);
   };
 
@@ -126,12 +100,69 @@ export default function SwipeableStackCards() {
     setCurrentCard((prev) => prev - 1);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDonationAmount(e.target.value);
+  };
+  const {sendTransactionAsync} = useSendTransaction()
   return (
     <div className="relative h-[700px] w-[800px]" style={{ perspective: 600 }}>
-      {testimonials.map((card, index) => {
+      {commemes.map((card, index) => {
+        const totalDonation = Number(formatEther(BigInt(card.totalDonation.toString())));
+        const threshold = Number(formatEther(BigInt(card.threshold.toString())));
+        const progress = (totalDonation / threshold) * 100;
+        const remainingDonation = threshold - totalDonation;
+
+       
+
+        const handleDonate = async () => {
+          if (!donationAmount) {
+            toast.error("Please enter a donation amount");
+            return;
+          }
+          if (Number(donationAmount) <= 0) {
+            toast.error("Please enter a valid donation amount");
+            return;
+          }
+          try{
+            if(!chainData){
+              throw new Error("Invalid chain id")
+            }
+            
+            if(!account){
+              throw new Error("Please connect your wallet")
+            }
+            if(currentChainId !== account.chainId){
+              await wallet.data?.switchChain({
+                id:chainId
+              })
+            }
+            const hash =  await wallet.data?.sendTransaction({
+              to: card.commemeAddress as `0x${string}`,
+              value: parseEther(donationAmount),
+              chainId: chainId
+            })
+            if(!hash){
+              throw new Error("Transaction failed")
+            }
+            console.log(hash);
+            toast.success(<TransactionToast hash={hash} title="Funds Sent" scanner={`${chainData.scanner}/tx/`} />);
+
+          }
+          catch(error){
+            toast.error(`Failed to send transaction: ${(error as any).message}`);
+          }
+          finally{
+            setDonationAmount("");
+            await query.refetch();
+
+          }
+         
+          
+        };
+
         return (
           <SwipeCard
-            key={card.personName}
+            key={card.id}
             onSwipeRight={() => swipeRight(index)}
             onSwipeLeft={() => swipeLeft(index)}
             index={index}
@@ -150,44 +181,58 @@ export default function SwipeableStackCards() {
             >
               <Card className="h-full w-full">
                 <div>
-                <img
-                      src={card.image}
-                      alt={card.personName}
-                      className="w-full h-[200px]  object-cover"
-                      width={120}
-                      height={100}
-                    />
-                </div>
-                <div>
-                  {/* <h2 className="text-lg">{card.companyName}</h2> */}
-                  <div className=" p-5">
-                      <h3 className=" font-semibold">
-                        {card.personName}
-                      </h3>
-                      <p className="text-xs">{card.profession}</p>
-                    </div>
-                </div>
-               
-                  <p className="px-6 ">{card.testimonial}</p>
-             
-                <CardFooter>
-                  {/* <div className="flex items-center">
+                  {card.image && (
                     <img
                       src={card.image}
-                      alt={card.personName}
-                      className="w-8 h-8 rounded-full object-cover"
-                      width={100}
-                      height={100}
+                      alt={card.name}
+                      className="w-full object-fill"
+                      width={120}
                     />
-                    <div className="ml-2">
-                      <h3 className="text-sm font-semibold">
-                        {card.personName}
-                      </h3>
-                      <p className="text-xs">{card.profession}</p>
-                    </div> */}
-                  {/* </div> */}
-                  <Button className="mt-3 w-full">
-                    Donate
+                  )}
+                </div>
+                <div className="p-5">
+                  <h3 className="font-semibold">{card.name}</h3>
+                  <p>{card.description}</p>
+                  <a href={`${chainData.scanner}/address/${card.creator}`} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                    {shortenAddress(card.creator)}
+                  </a>
+                  <div className="mt-2">
+                    {card.isActive ? (
+                      <Badge>Active</Badge>
+                    ) : (
+                      <Badge variant="destructive">Deadline</Badge>
+                    )}
+                  </div>
+                  <div className="mt-2">
+                    <Progress value={progress} />
+                    <p className="text-xs mt-1">{progress.toFixed(2)}% complete</p>
+                    <p className="text-xs mt-1">Needs {remainingDonation.toFixed(4)} {chainData.tokenName} to deploy as meme token</p>
+                  </div>
+                  {card.poolAddress !== "0x0000000000000000000000000000000000000000" && (
+                    <div className="mt-2">
+                      <a href={`${chainData.scanner}/address/${card.poolAddress}`} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                        Pool
+                      </a>
+                    </div>
+                  )}
+                  {card.tokenAddress !== "0x0000000000000000000000000000000000000000" && (
+                    <div className="mt-2">
+                      <a href={`${chainData.scanner}/address/${card.tokenAddress}`} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                        Token
+                      </a>
+                    </div>
+                  )}
+                </div>
+                <CardFooter className="flex flex-col items-center">
+                  <input
+                    type="number"
+                    value={donationAmount}
+                    onChange={handleInputChange}
+                    placeholder="Amount in Native Currency "
+                    className="p-2 border rounded mb-2 w-full text-black"
+                  />
+                  <Button className="w-full" onClick={handleDonate}>
+                    Fund
                   </Button>
                 </CardFooter>
               </Card>
