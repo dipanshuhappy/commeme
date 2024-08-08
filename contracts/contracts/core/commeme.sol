@@ -85,7 +85,7 @@ contract Commeme {
             tokenAddress: 0x0000000000000000000000000000000000000000,
             owner: _sender
         });
-        _legacy = legacy;
+        legacy = _legacy;
         timeToClose = block.timestamp + 1440 minutes;
         threshold = _threshold;
         _wcore = IWCORE(_wCoreAddress);

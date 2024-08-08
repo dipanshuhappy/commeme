@@ -8,9 +8,9 @@ dataSources:
     name: CommemeFactory
     network: matic
     source:
-      address: "0x72c76de0801B5013aCE5D7942DFea1Ba57149B97"
+      address: "0xdCcF514720AABBfFF6bed7a7Db4b498677EfD3D3"
       abi: CommemeFactory
-      startBlock: 60330037
+      startBlock: 60350767
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
