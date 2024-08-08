@@ -39,15 +39,18 @@ contract Commeme {
     using SafeMath for uint256;
     address public poolAddress;
 
+    string public metadata;
+
     uint256 public price;
 
     error AETS();    
     IUniswapV3Factory public uniswapV3Factory;
 
-    event CommemeCreated(address indexed contractAddress, address indexed sender, uint256 threshold, address factoryContractAddress, address wCoreAddress, address router, uint256 price);
+    event CommemeCreated(address indexed sender,string metadata ,uint256 threshold,string name,string symbol, uint256 price,uint256 totalSupply);
     event PoolCreated(address indexed poolAddress, address tokenA, address tokenB);
     event TokenDeployed(address indexed tokenAddress, string tokenName, string tokenSymbol, uint256 totalSupply);
     event LiquidityAdded(address tokenA, address tokenB, uint256 amountA, uint256 amountB);
+    event Donation(bool isActive, uint256 totalDonationAmount, uint256 currentDonation,uint256 timeToClose,address token,address donor);
 
     struct MemeDetails {
         string name;
@@ -68,12 +71,12 @@ contract Commeme {
         address _sender, 
         string memory _name, 
         string memory _symbol, 
+        string memory _metadata,
         uint256 _totalSupply, 
         uint256 _threshold,
         address _factoryContractAddress,
         address _router,
         address _wCoreAddress,
-        // address _corePriceAggregator,
         uint256 _price
     ) {
         memeDetails = MemeDetails({
@@ -88,11 +91,12 @@ contract Commeme {
         _wcore = IWCORE(_wCoreAddress);
         ROUTER = _router;
         price = _price;
+        metadata = _metadata;
         factoryContractAddress = _factoryContractAddress;
         // corePriceAggregator = AggregatorV3Interface(_corePriceAggregator);
         isActive = true;
 
-        emit CommemeCreated(address(this), _sender, _threshold, _factoryContractAddress, _wCoreAddress, _router, _price);
+        emit CommemeCreated( _sender,_metadata, _threshold, _factoryContractAddress, _wCoreAddress, _router, _price);
     }
 
     function earlyDonations(address _sender, uint256 _amount) public payable {
@@ -167,6 +171,7 @@ contract Commeme {
 
     function _deployToken() private {
         require(memeDetails.tokenAddress == 0x0000000000000000000000000000000000000000, "Token already deployed");
+
 
         ERC20MemeToken token = new ERC20MemeToken(
             memeDetails.name,

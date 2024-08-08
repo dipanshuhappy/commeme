@@ -13,6 +13,7 @@ contract CommemeFactory {
         address _sender,
         string memory _name,
         string memory _symbol,
+        string memory _metadata,
         uint256 _totalSupply,
         uint256 _threshold,
         address _factoryContractAddress,
