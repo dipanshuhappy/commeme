@@ -18,7 +18,7 @@ export default function Header() {
     </Avatar>
     {/* <NavbarHeader/> */}
     <div className="flex justify-between text-xl font-semibold space-x-8 items-center ">
-      <Link href="/meme" className='border-b-2 p-2 hover:border-orange-500 hover:text-orange-500 ' >
+      <Link href="/explore" className='border-b-2 p-2 hover:border-orange-500 hover:text-orange-500 ' >
       Explore Meme
       </Link>
       <Link href="/meme" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500 ">

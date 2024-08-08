@@ -71,6 +71,9 @@ dependencies:
   react-dom:
     specifier: ^18.3.1
     version: 18.3.1(react@18.3.1)
+  react-tinder-card:
+    specifier: ^1.6.4
+    version: 1.6.4(react@18.3.1)
   tailwind-merge:
     specifier: ^2.4.0
     version: 2.4.0
@@ -8549,6 +8552,10 @@ packages:
     dependencies:
       p-limit: 3.1.0
 
+  /p-sleep@1.1.0:
+    resolution: {integrity: sha512-bwP3GKZirBUYMtiUuBrheLUQdRXVeE/pmHOaLpNJzNfAD4b5AjDn6l823brXcQFade4G/g7GMNQ3KV86E8EaEw==}
+    dev: false
+
   /p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
@@ -9114,6 +9121,22 @@ packages:
       object-assign: 4.1.1
       react: 18.3.1
       react-is: 18.3.1
+    dev: false
+
+  /react-tinder-card@1.6.4(react@18.3.1):
+    resolution: {integrity: sha512-IC6YXoBZ+51jm7XsT8i+8G/ov8rvAob+kBRdp9unQyjsLc7jmuYb1cNfu95Q3mdFDgwE0AzTIyl1o2Klm61+aQ==}
+    peerDependencies:
+      '@react-spring/native': ^9.5.5
+      '@react-spring/web': ^9.5.5
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@react-spring/native':
+        optional: true
+      '@react-spring/web':
+        optional: true
+    dependencies:
+      p-sleep: 1.1.0
+      react: 18.3.1
     dev: false
 
   /react-use-measure@2.1.1(react-dom@18.3.1)(react@18.3.1):
