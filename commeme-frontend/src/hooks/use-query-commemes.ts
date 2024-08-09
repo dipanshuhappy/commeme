@@ -23,7 +23,7 @@ const CONSTANT_ADDRESSES = {
       scanner:"https://scan.coredao.org",
       graphql: "https://commeme-1.onrender.com",
       tokenName: "CORE",
-      
+      // chai88
    
   }
 } as const;
