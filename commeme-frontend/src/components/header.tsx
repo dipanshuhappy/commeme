@@ -35,7 +35,7 @@ export default function Header() {
 
 
   return (
-    <div className="py-2 px-4 w-full flex justify-between items-center">
+    <div className="py-4 px-6 w-full flex justify-between items-center">
       <Dialog open={isOpen} defaultOpen={false} modal={isOpen} /* Disable default close */ >
         <DialogOverlay />
 
@@ -105,10 +105,13 @@ export default function Header() {
         </Then>
         <Else>
         <Dialog>
-          <DialogTrigger className="px-4 py-2 rounded-md  text-center relative overflow-hidden bg-black dark:bg-white dark:text-black text-white flex justify-center group/modal-btn">
+          <DialogTrigger className="px-4 py-2 rounded-full  text-center relative overflow-hidden bg-white dark:bg-white dark:text-black text-black font-semibold flex justify-center group/modal-btn">
             <span className="group-hover/modal-btn:translate-x-40 text-center transition duration-500">
               Connect Wallet
             </span>
+            <div className="-translate-x-40 group-hover/modal-btn:translate-x-0 flex items-center justify-center absolute inset-0 transition duration-500 text-white z-20">
+             💳
+            </div>
 
             <div className="-translate-x-40 group-hover/modal-btn:translate-x-0 flex items-center justify-center absolute inset-0 transition duration-500 text-white z-20">
               <svg
@@ -129,7 +132,7 @@ export default function Header() {
               <DialogTitle className="text-center">Select Wallet</DialogTitle>
             </DialogHeader>
             <DialogDescription>
-              <div className="flex justify-between flex-col  items-center my-4">
+              <div className="flex justify-between flex-col items-center my-4">
                 {connectors.map((connector) => (
                   <Button
                     key={connector.uid}

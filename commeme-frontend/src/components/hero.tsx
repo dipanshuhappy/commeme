@@ -51,7 +51,7 @@ export default function Hero() {
                 duration: 0.5,
                 ease: [0.4, 0.0, 0.2, 1],
               }}
-              className="text-1xl px-4 md:text-4xl lg:text-5xl font-bold text-neutral-700 dark:text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto "
+              className="text-1xl px-4 sm:text-3xl md:text-3xl lg:text-5xl font-bold text-neutral-700 dark:text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto "
             >
               Revolutionize with Memes,{""}
               <Highlight className="text-black  dark:text-white">
@@ -78,11 +78,8 @@ export default function Hero() {
                 </ModalBody>
               </Modal>
 
-              {/* <Button >
-        ❤️  Login with Email
-    </Button> */}
               <button className="shadow-[inset_0_0_0_2px_#616467] text-black px-12 py-4 rounded-full tracking-widest uppercase font-bold bg-transparent hover:bg-[#616467] hover:text-white dark:text-neutral-200 transition duration-200 text-[15px]">
-                ❤️ Donate a meme
+                Join UBI ✊
               </button>
             </div>
           </div>
