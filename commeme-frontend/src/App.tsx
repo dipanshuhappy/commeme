@@ -3,8 +3,10 @@ import './App.css'
 import {  Route, Switch } from "wouter";
 import MemeDiv from './components/meme-template';
 import Hero from './components/hero';
-import Advanced from './components/explore';
-import Explore from './components/explore';
+import Advanced from './components/explore-polygon';
+import Explore from './components/explore-polygon';
+import ExploreCore from './components/explore-coredao';
+
 
 
 function App() {
@@ -22,7 +24,11 @@ function App() {
       <Route path="/users/:name">
         {(params) => <>Hello, {params.name}!</>}
       </Route>
-<Route path="/explore" component={Explore}/>
+      <Route path="/explore/137" component={Explore}/>
+      <Route path="/explore/1116" component={ExploreCore}/>
+        {/* <Route path="/explore/:chainId">
+        {(params) => <Explore chainId={parseInt(params.chainId)} />}
+        </Route> */}
       {/* Default route in a switch */}
       <Route>404: No such page!</Route>
     </Switch>

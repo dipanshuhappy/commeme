@@ -75,13 +75,13 @@ function SwipeCard({
   );
 }
 
-export default function SwipeableStackCards({ commemes, chainId }: { commemes: Commeme[], chainId: SupportChainId }) {
+export default function SwipeableStackCards({ commemes, chainId ,refetch}: { commemes: Commeme[], chainId: SupportChainId,refetch: Function}) {
   const [currentCard, setCurrentCard] = useState(0);
   const [donationAmount, setDonationAmount] = useState<string>("");
   const chainData = CONSTANT_ADDRESSES[chainId];
   const account = useAccount()
-  const query = useQueryCommemes(chainId as SupportChainId);
-  const  { switchChainAsync } = useSwitchChain()
+  
+  
   const wallet = useWalletClient()
   const currentChainId = useChainId()
   const swipeLeft = (index: number) => {
@@ -103,7 +103,6 @@ export default function SwipeableStackCards({ commemes, chainId }: { commemes: C
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDonationAmount(e.target.value);
   };
-  const {sendTransactionAsync} = useSendTransaction()
   return (
     <div className="relative h-[700px] w-[800px]" style={{ perspective: 600 }}>
       {commemes.map((card, index) => {
@@ -145,7 +144,10 @@ export default function SwipeableStackCards({ commemes, chainId }: { commemes: C
               throw new Error("Transaction failed")
             }
             console.log(hash);
-            toast.success(<TransactionToast hash={hash} title="Funds Sent" scanner={`${chainData.scanner}/tx/`} />);
+            toast.success(<TransactionToast hash={hash} title="Funds Sent" scanner={`${chainData.scanner}/tx/`} />,{
+              duration: 100000,
+              cancel: "Close"
+            });
 
           }
           catch(error){
@@ -153,7 +155,7 @@ export default function SwipeableStackCards({ commemes, chainId }: { commemes: C
           }
           finally{
             setDonationAmount("");
-            await query.refetch();
+            await refetch();
 
           }
          
