@@ -28,6 +28,7 @@ import CreateMemeForm from "./create-meme-form.tsx";
 
 
 import { StickyScrollRevealDemo } from "./features.tsx";
+import { Link } from "wouter";
 
 export default function Hero() {
   
@@ -78,8 +79,8 @@ export default function Hero() {
                 </ModalBody>
               </Modal>
 
-              <button className="shadow-[inset_0_0_0_2px_#616467] text-black px-12 py-4 rounded-full tracking-widest uppercase font-bold bg-transparent hover:bg-[#616467] hover:text-white dark:text-neutral-200 transition duration-200 text-[15px]">
-                Join UBI ✊
+              <button  className="shadow-[inset_0_0_0_2px_#616467] text-black px-12 py-4 rounded-full tracking-widest uppercase font-bold bg-transparent hover:bg-[#616467] hover:text-white dark:text-neutral-200 transition duration-200 text-[15px]">
+               <Link to="/anon"> Join UBI ✊</Link>
               </button>
             </div>
           </div>
