@@ -88,7 +88,7 @@ export default function CreateMemeForm() {
           addresses.factoryAddress,
           addresses.routerAddress,
           addresses.wrapAddress,
-          "0x8b5E4bA136D3a483aC9988C20CBF0018cC687E6f",
+          addresses.legacyAddress,
           BigInt(1),
         ],
       });

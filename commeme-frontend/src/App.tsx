@@ -4,6 +4,8 @@ import {  Route, Switch } from "wouter";
 import MemeDiv from './components/meme-template';
 import Hero from './components/hero';
 
+import Anon from './components/anon-aadhar';
+
 import Explore from './components/explore-polygon';
 import ExploreCore from './components/explore-coredao';
 
@@ -20,6 +22,7 @@ function App() {
     <Switch>
       <Route path='/' component={Hero} />
       <Route path="/meme-template" component={MemeDiv} />
+      <Route path="/anon" component={Anon} />
 
       <Route path="/users/:name">
         {(params) => <>Hello, {params.name}!</>}
