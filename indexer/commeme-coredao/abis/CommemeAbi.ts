@@ -1,4 +1,4 @@
-export const COMMEME_ABI = [
+export const CommemeAbi = [
 	{
 		"inputs": [
 			{
@@ -522,4 +522,4 @@ export const COMMEME_ABI = [
 		"stateMutability": "payable",
 		"type": "receive"
 	}
-] as const;
+] as const

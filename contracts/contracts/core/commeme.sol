@@ -1,11 +1,11 @@
 //SPDX-License-Identifier: MIT
 
 
-import "../helperContracts/ierc20.sol";
+import "../../helperContracts/ierc20_permit.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "../helperContracts/safemath.sol";
+import "../../helperContracts/safemath.sol";
 import "./erc20Meme.sol";
-import "../helperContracts/wcore_interface.sol";
+import "../../helperContracts/wcore_interface.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
@@ -85,7 +85,7 @@ contract Commeme {
             tokenAddress: 0x0000000000000000000000000000000000000000,
             owner: _sender
         });
-        _legacy = legacy;
+        legacy = _legacy;
         timeToClose = block.timestamp + 1440 minutes;
         threshold = _threshold;
         _wcore = IWCORE(_wCoreAddress);
@@ -114,30 +114,43 @@ contract Commeme {
                 donatorsAmount[_sender] = donatorsAmount[_sender].add(_amount);
                 donationAmount = donationAmount.add(_amount);
             }
+            uint256 minutesToAdd = ((price.mul(_amount)).mul(60));
+            timeToClose = timeToClose.add((minutesToAdd.mul(1 minutes)));
+           
             if(donationAmount >= threshold) {
                 _deployToken();
                 emit TokenDeployed(memeDetails.tokenAddress, memeDetails.name, memeDetails.symbol, memeDetails.totalSupply);
                 _createPool(address(_wcore) , memeDetails.tokenAddress, factoryContractAddress);
                 emit PoolCreated(poolAddress, address(_wcore), memeDetails.tokenAddress);
                 _meme = IERC20Permit(memeDetails.tokenAddress);
-                uint256 _legacyAmount = (donationAmount.mul(10)).div(100);
-                payable(legacy).transfer(_legacyAmount);
-                donationAmount = donationAmount.sub(_legacyAmount);
-                _wcore.deposit{value: donationAmount}();
+                // uint256 _legacyAmount = (donationAmount.mul(10)).div(100);
+                // donationAmount = donationAmount.sub(_legacyAmount);
+                // payable(legacy).transfer(_legacyAmount);
+                
+                uint256 depositAmount = (donationAmount.mul(90)).div(100);
+                // require(depositAmount < donationAmount, "deposit exceeding or not calculating");
+                _wcore.deposit{value: depositAmount}();
                 uint256 toLiquidity =  (memeDetails.totalSupply.mul(70)).div(100);
+                // require(toLiquidity < memeDetails.totalSupply, "liquidity amount exceeds");
                 uint256 forAirDrop = memeDetails.totalSupply.sub(toLiquidity);
-                _addLiquidity(toLiquidity, _wcore.balanceOf(address(this)));
-                emit LiquidityAdded(address(_wcore), memeDetails.tokenAddress, toLiquidity, donationAmount);
+                require((toLiquidity.add(forAirDrop)) <= memeDetails.totalSupply);
+                _addLiquidity(toLiquidity, depositAmount);
+                emit LiquidityAdded(address(_wcore), memeDetails.tokenAddress, toLiquidity, depositAmount);
                 _transferTokens(forAirDrop);
+                uint256 _legacyAmount = donationAmount.sub(depositAmount);
+                require(_legacyAmount <= address(this).balance);
+                // donationAmount = donationAmount.sub(_legacyAmount);
+                payable(legacy).transfer(_legacyAmount);
             }
             // (, int256 latestPrice , , ,)  = corePriceAggregator.latestRoundData();
-            uint256 minutesToAdd = ((price.mul(_amount)).mul(60));
-            timeToClose = timeToClose.add((minutesToAdd.mul(1 minutes)));
+            // uint256 minutesToAdd = ((price.mul(_amount)).mul(60));
+            // timeToClose = timeToClose.add((minutesToAdd.mul(1 minutes)));
+            emit Donation(isActive, donationAmount, _amount, timeToClose, address(_meme), _sender);
         }
     }
 
     function _createPool(address token0, address token1, address _factory) private returns(address){
-        require(token0 != token1, "Cannot create a pool with the same token");
+        // require(token0 != token1, "Cannot create a pool with the same token");
         Pool pool = Pool(_factory);
         poolAddress = pool.createPair(token0, token1);
         return poolAddress;
@@ -188,8 +201,11 @@ contract Commeme {
         for(uint i=0; i<donators.length; i++) {
             address donator = donators[i];
             uint256 donatorContribution = donatorsAmount[donator];
-            uint256 donatorPercentage = donatorContribution.mul(100).div(donationAmount);
-            uint256 tokensToSend = forAirDrop.mul(donatorPercentage).div(100);
+            // require(donatorContribution > 0, "donatorContribution cant be zero");
+            uint256 donatorPercentage = (donatorContribution.mul(100)).div(donationAmount);
+            // require(donatorPercentage > 0, "donatorPercentage");
+            uint256 tokensToSend = (forAirDrop.mul(donatorPercentage)).div(100);
+            // require(tokensToSend > 0, "tokensToSend cant be zero");
             _meme.transfer(donator, tokensToSend);
         }
     }

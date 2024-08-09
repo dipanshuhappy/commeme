@@ -1,4 +1,4 @@
-import { createClient, createPublicClient, createWalletClient, http, NumberToHexOpts, } from "viem"
+import { createClient, createPublicClient, createWalletClient, http } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 import { coreDao, polygon } from "viem/chains"
 export type SupportChainId = 1116 | 137;
@@ -29,12 +29,13 @@ export const sendRawTransaction = async ({key,rpc,to,value,data,chainId}:{key: `
     const hash = await walletClient.sendTransaction({
         to,
         value:BigInt(value),
-        data
+        data,
     })
-    const receipt = await publicClient.waitForTransactionReceipt({
+    await publicClient.waitForTransactionReceipt({
         hash,
-        confirmations:1
+        confirmations:1,
+        
     })
 
-    return receipt
+    return hash
 }   

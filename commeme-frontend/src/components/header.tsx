@@ -23,13 +23,13 @@ export default function Header() {
   return (
     <div className="py-2 px-4 w-full flex justify-between items-center">
       <Avatar className="h-16 w-16">
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarImage src="/logo.png" alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       {/* <NavbarHeader/> */}
       <div className="flex justify-between text-xl font-semibold space-x-8 items-center ">
         <Link
-          href="/meme"
+          href="/explore"
           className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500 "
         >
           Explore Meme
