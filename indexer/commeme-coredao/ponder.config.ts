@@ -21,11 +21,11 @@ export default createConfig({
       network: "coredao",
       abi: CommemeAbi,
       factory: {
-        address: "0xbA1bf1B4C72d779f3dd21a8f29a70A82fD4dc3B7",
+        address: "0xb8F55945296407B8f9a7095F0c71b221a257b2F2",
         event: commemeFactoryEvent,
         parameter: "commemeAddress",
       },
-      startBlock: 16619840,
+      startBlock: 16624950,
     },
   },
 });
