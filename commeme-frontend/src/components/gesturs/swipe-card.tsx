@@ -4,15 +4,15 @@ import { Card, CardFooter } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import { Commeme } from "@/lib/types";
 import { shortenAddress } from "@/lib/utils";
-import { formatEther,parseEther } from "viem/utils";
+import { formatEther, parseEther } from "viem/utils";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { SupportChainId } from "@/hooks/use-query-commemes";
 import { CONSTANT_ADDRESSES } from "@/data/addresses-data";
-// import { useSendTransaction } from "wagmi";
 import { toast } from "sonner";
 import { TransactionToast } from "../ui/transaction-toast";
 import { useAccount, useChainId, useWalletClient,   } from "wagmi";
+import { Modal, ModalTrigger, ModalBody } from "../ui/animated-modal";
 
 interface CardRotateProps {
   index: number;
@@ -33,8 +33,6 @@ function SwipeCard({
   const y = useMotionValue(0);
   const scale = useTransform(x, [-100, 100], [0.9, 1.1]);
   const rotateZ = useTransform(x, [-100, 100], [-20, 20]);
-
- 
 
   function handleDragEnd(_: any, info: PanInfo) {
     const threshold = 180;
@@ -82,6 +80,7 @@ export default function SwipeableStackCards({ commemes, chainId ,refetch}: { com
   
 
   const currentChainId = useChainId()
+  
   const swipeLeft = (index: number) => {
     if (index !== currentCard) {
       setCurrentCard(index);
@@ -109,8 +108,6 @@ export default function SwipeableStackCards({ commemes, chainId ,refetch}: { com
         const progress = (totalDonation / threshold) * 100;
         const remainingDonation = threshold - totalDonation;
 
-       
-
         const handleDonate = async () => {
           if (!donationAmount) {
             toast.error("Please enter a donation amount");
@@ -120,25 +117,25 @@ export default function SwipeableStackCards({ commemes, chainId ,refetch}: { com
             toast.error("Please enter a valid donation amount");
             return;
           }
-          try{
-            if(!chainData){
+          try {
+            if (!chainData) {
               throw new Error("Invalid chain id")
             }
-            
-            if(!account){
+
+            if (!account) {
               throw new Error("Please connect your wallet")
             }
-            if(currentChainId !== account.chainId){
+            if (currentChainId !== account.chainId) {
               await wallet.data?.switchChain({
-                id:chainId
+                id: chainId
               })
             }
-            const hash =  await wallet.data?.sendTransaction({
+            const hash = await wallet.data?.sendTransaction({
               to: card.commemeAddress as `0x${string}`,
               value: parseEther(donationAmount),
               chainId: chainId
             })
-            if(!hash){
+            if (!hash) {
               throw new Error("Transaction failed")
             }
             console.log(hash);
@@ -147,17 +144,14 @@ export default function SwipeableStackCards({ commemes, chainId ,refetch}: { com
               cancel: "Close"
             });
 
-          }
-          catch(error){
+          } catch (error) {
             toast.error(`Failed to send transaction: ${(error as any).message}`);
-          }
-          finally{
+          } finally {
             setDonationAmount("");
             await refetch();
 
           }
-         
-          
+
         };
 
         return (
@@ -191,11 +185,31 @@ export default function SwipeableStackCards({ commemes, chainId ,refetch}: { com
                   )}
                 </div>
                 <div className="p-5">
-                  <h3 className="font-semibold">{card.name}</h3>
+                  <div className="flex justify-between items-center">
+                    <div className="">
+                      <h3 className="font-semibold">{card.name}</h3>
+
+                      <a href={`${chainData.scanner}/address/${card.creator}`} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                        {shortenAddress(card.creator)}
+                      </a>
+                    </div>
+                    <Modal>
+                      <ModalTrigger>
+                        <Button className="w-20">
+                          Share
+                        </Button>
+                      </ModalTrigger>
+                      <ModalBody className="p-2 w-full flex justify-center items-center">
+                      <button className="shadow-[inset_0_0_0_2px_#616467] text-black p-3 rounded-full tracking-widest uppercase font-semibold bg-transparent hover:bg-[#616467] hover:text-white dark:text-neutral-200 transition duration-200 w-full">
+                         ❤️ Share on Twitter
+                        </button>
+                        {/* <Button onClick={() => handleShare("instagram", card)}>
+                          Share on Instagram
+                        </Button> */}
+                      </ModalBody>
+                    </Modal>
+                  </div>
                   <p>{card.description}</p>
-                  <a href={`${chainData.scanner}/address/${card.creator}`} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-                    {shortenAddress(card.creator)}
-                  </a>
                   <div className="mt-2">
                     {remainingDonation !== 0 ? (
                       <Badge>Active</Badge>
