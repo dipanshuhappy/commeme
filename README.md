@@ -28,7 +28,10 @@ This project is designed to create and manage memecoins based on community engag
        ```bash
        Commeme Factory: https://polygonscan.com/address/0x3c287EBA998789a4a8C88ec0b251bb08978bb980
        ```
-     
+     - Here is the Core Dao Mainnet deployments
+       ```bash
+       COmmeme Factory: https://scan.coredao.org/address/0xb8F55945296407B8f9a7095F0c71b221a257b2F2
+       ```
 
 ### 3. **gasless**
    - **Description**: The gasless module is designed to eliminate the need for users to pay transaction fees, making it easier for users to onboard. It creates the memes without users paying gas
