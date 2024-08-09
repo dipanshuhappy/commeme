@@ -1,5 +1,5 @@
 // import { CONSTANT_ADDRESSES } from "@/data/addresses-data";
-import { Commeme, CommemeQueryResult } from "@/lib/types";
+import {  CommemeDataResponseDaoCore, } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
 
@@ -27,43 +27,46 @@ const CONSTANT_ADDRESSES = {
    
   }
 } as const;
-const queryPolygon = gql`
+
+const queryCoreDao = gql`
   {
-    commemes(orderBy: totalDonation, orderDirection: desc) {
-      id
-      commemeAddress
-      creator
-      isActive
-      timeToClose
-      threshold
-      totalSupply
-      name
-      symbol
-      tokenAddress
-      metadata
-      poolAddress
-      totalDonation
-      blockNumber
-      blockTimestamp
-      transactionHash
+    commemes(orderBy: "totalDonation", orderDirection: "desc") {
+      items {
+        id
+        commemeAddress
+        creator
+        isActive
+        timeToClose
+        threshold
+        totalSupply
+        name
+        symbol
+        tokenAddress
+        metadata
+        poolAddress
+        totalDonation
+        blockNumber
+        blockTimestamp
+        transactionHash
+      }
     }
   }
 `;
-
 export type SupportChainId = keyof typeof CONSTANT_ADDRESSES;
 
-export const useQueryCommemes = (chainId: SupportChainId) => {
+export const useQueryCommemesCoreDao = (chainId: SupportChainId) => {
   
   return useQuery({
 
-    queryKey: ['commemes'],
+    queryKey: ['commemes-coredao'],
     refetchInterval: 7000,
 
     async queryFn() {
-        const result = await request<CommemeQueryResult>(CONSTANT_ADDRESSES[chainId].graphql, queryPolygon);
-        const commemes = result.commemes;
+        const result = await request<CommemeDataResponseDaoCore>(CONSTANT_ADDRESSES[chainId].graphql, queryCoreDao);
+        const commemes = result.commemes.items;
+        console.log(commemes);
   
-      const enrichedCommemes = await Promise.all(
+        const enrichedCommemes = await Promise.all(
         commemes.map(async (commeme) => {
           try {
             const response = await fetch(commeme.metadata);
@@ -83,11 +86,11 @@ export const useQueryCommemes = (chainId: SupportChainId) => {
         }));
   
         return enrichedCommemes.sort((a, b) => {
-          if (a.isActive === b.isActive) {
-            return Number(b.totalDonation) - Number(a.totalDonation); // Sort by totalDonation if both are either true or false
-          }
-          return a.isActive ? -1 : 1; // Place active ones first
-        }) as Commeme[];
+            if (a.isActive === b.isActive) {
+              return Number(b.totalDonation) - Number(a.totalDonation); // Sort by totalDonation if both are either true or false
+            }
+            return a.isActive ? -1 : 1; // Place active ones first
+        });;
     },
   });
 };

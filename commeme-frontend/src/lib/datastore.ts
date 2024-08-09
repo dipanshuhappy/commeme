@@ -12,7 +12,7 @@ interface  BlockchainNetworkStore{
 
 export const useBlockchainNetwork = create(
     persist<BlockchainNetworkStore>(
-        (set, get) => ({
+        (set) => ({
             currentNetwork: undefined,
             setCurrentNetwork(network) {
                 set({ currentNetwork: network });

@@ -10,8 +10,9 @@ import { Else, If, Then } from "react-if";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { shortenAddress } from "@/lib/utils";
 import { Badge } from "./ui/badge";
-import { useAccount, useConnect, useDisconnect, useSwitchChain } from "wagmi";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { useAccount, useChains, useConnect, useDisconnect, useSwitchChain, useWalletClient } from "wagmi";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { useState } from "react";
 
 export default function Header() {
   const account = useAccount();
@@ -19,9 +20,48 @@ export default function Header() {
   const { disconnect } = useDisconnect()
   const { chains, switchChain } = useSwitchChain();
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  
+  const onClose = () => setIsOpen(false);
+
+
+  const {data:wallet} = useWalletClient();
+
+  const {} = useChains()
+
+
+  
+
 
   return (
     <div className="py-2 px-4 w-full flex justify-between items-center">
+      <Dialog open={isOpen} defaultOpen={false} modal={isOpen} /* Disable default close */ >
+        <DialogOverlay />
+
+        <DialogContent>
+          <DialogTitle>Select Either of the Two Chains</DialogTitle>
+          <div className="flex flex-col space-y-2">
+                {chains.map((chain) => (
+                  <Button
+                    key={chain.id}
+                    onClick={async () => 
+                      { 
+                        if(wallet){
+                          await wallet.switchChain({id: chain.id})
+                          onClose()
+                          
+                        }
+                 
+                      }
+                    }
+                  >
+                    {chain.name}
+                  </Button>
+                ))}
+              </div>
+        </DialogContent>
+      </Dialog>
       <Avatar className="h-16 w-16">
         <AvatarImage src="/logo.png" alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
@@ -29,16 +69,16 @@ export default function Header() {
       {/* <NavbarHeader/> */}
       <div className="flex justify-between text-xl font-semibold space-x-8 items-center ">
         <Link
-          href="/explore"
+          href="/explore/137"
           className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500 "
         >
-          Explore Meme
+          Explore Polygon
         </Link>
         <Link
-          href="/meme"
+          href="/explore/1116"
           className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500 "
         >
-          Registered Tokens
+          Explore Core
         </Link>
       </div>
       <If condition={account.address}>

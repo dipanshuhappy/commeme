@@ -1,18 +1,18 @@
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import React, { useState } from "react";
 import { Card, CardFooter } from "@/components/ui/card";
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/button";
+import { Button } from "../ui/button";
 import { Commeme } from "@/lib/types";
 import { shortenAddress } from "@/lib/utils";
 import { formatEther, parseEther } from "viem/utils";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { SupportChainId, useQueryCommemes } from "@/hooks/use-query-commemes";
+import { SupportChainId } from "@/hooks/use-query-commemes";
 import { CONSTANT_ADDRESSES } from "@/data/addresses-data";
 import { toast } from "sonner";
 import { TransactionToast } from "../ui/transaction-toast";
-import { useAccount, useChainId, useSendTransaction, useSwitchChain, useWalletClient } from "wagmi";
-import { Modal, ModalBody, ModalContent, ModalTrigger } from "../ui/animated-modal";
+import { useAccount, useChainId, useWalletClient,   } from "wagmi";
+import { Modal, ModalTrigger, ModalBody } from "../ui/animated-modal";
 
 interface CardRotateProps {
   index: number;
@@ -71,14 +71,14 @@ function SwipeCard({
   );
 }
 
-export default function SwipeableStackCards({ commemes, chainId }: { commemes: Commeme[], chainId: SupportChainId }) {
+export default function SwipeableStackCards({ commemes, chainId ,refetch}: { commemes: Commeme[], chainId: SupportChainId,refetch: Function}) {
   const [currentCard, setCurrentCard] = useState(0);
   const [donationAmount, setDonationAmount] = useState<string>("");
   const chainData = CONSTANT_ADDRESSES[chainId];
   const account = useAccount()
-  const query = useQueryCommemes(chainId as SupportChainId);
-  const { switchChainAsync } = useSwitchChain()
   const wallet = useWalletClient()
+  
+
   const currentChainId = useChainId()
   
   const swipeLeft = (index: number) => {
@@ -100,27 +100,6 @@ export default function SwipeableStackCards({ commemes, chainId }: { commemes: C
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDonationAmount(e.target.value);
   };
-
-  const { sendTransactionAsync } = useSendTransaction()
-
-  const handleShare = (platform: string, card: Commeme) => {
-    const shareText = `Check out this meme: ${card.name}`;
-    const shareUrl = `${window.location.href}?card=${card.id}`;
-    const imageUrl = card.image;
-
-    if (platform === "twitter") {
-      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(imageUrl)}`, "_blank");
-    } else if (platform === "instagram") {
-      const link = document.createElement('a');
-      link.href = imageUrl;
-      link.download = `${card.name}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      toast.info("Image downloaded. Please share it on Instagram manually.");
-    }
-  };
-
   return (
     <div className="relative h-[700px] w-[800px]" style={{ perspective: 600 }}>
       {commemes.map((card, index) => {
@@ -160,13 +139,16 @@ export default function SwipeableStackCards({ commemes, chainId }: { commemes: C
               throw new Error("Transaction failed")
             }
             console.log(hash);
-            toast.success(<TransactionToast hash={hash} title="Funds Sent" scanner={`${chainData.scanner}/tx/`} />);
+            toast.success(<TransactionToast hash={hash} title="Funds Sent" scanner={`${chainData.scanner}/tx/`} />,{
+              duration: 100000,
+              cancel: "Close"
+            });
 
           } catch (error) {
             toast.error(`Failed to send transaction: ${(error as any).message}`);
           } finally {
             setDonationAmount("");
-            await query.refetch();
+            await refetch();
 
           }
 

@@ -8,21 +8,19 @@
 // import Card from "@components/Card";
 // import Head from "next/head";
 
-import { SupportChainId, useQueryCommemes } from "@/hooks/use-query-commemes";
-import ExpandableCardDemo from "./blocks/expandable-card-demo-grid";
+import {useQueryCommemes } from "@/hooks/use-query-commemes";
 import SwipeableStackCards from "./gesturs/swipe-card";
-import { useChainId } from "wagmi";
+
 
 export default function Explore() {
-  const chainId = useChainId()
-  const {data:commemes,status} = useQueryCommemes(chainId as SupportChainId)
-
+  const {data:commemes,status,error,refetch} = useQueryCommemes(137)
+  console.log({error})
   return(
  <div className="w-full h-full flex justify-center items-center">
       {status === 'pending' ? <div>Loading...</div> : null}
       {status === 'error' ? <div>Error ocurred querying the Subgraph</div> : null}
       {/* <ExpandableCardDemo commemes={commemes ?? []} /> */}
-      <SwipeableStackCards commemes={commemes ?? []} chainId={chainId as SupportChainId}/>
+      <SwipeableStackCards commemes={commemes ?? []} chainId={137} refetch={refetch}/>
  </div>
 );
 };
