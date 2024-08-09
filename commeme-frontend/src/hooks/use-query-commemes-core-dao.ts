@@ -107,7 +107,12 @@ export const useQueryCommemesCoreDao = (chainId: SupportChainId) => {
           }
         }));
   
-        return enrichedCommemes as Commeme[];
+        return enrichedCommemes.sort((a, b) => {
+            if (a.isActive === b.isActive) {
+              return Number(b.totalDonation) - Number(a.totalDonation); // Sort by totalDonation if both are either true or false
+            }
+            return a.isActive ? -1 : 1; // Place active ones first
+        });;
     },
   });
 };
