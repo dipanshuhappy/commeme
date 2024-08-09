@@ -32,7 +32,7 @@ app.post("/transaction", async (req, res) => {
   console.log(unparasedBody)
   const env = ENV.parse(process.env)
   const parsedTransaction = TransactionSchema.parse(unparasedBody)
-  if(!["0xbA1bf1B4C72d779f3dd21a8f29a70A82fD4dc3B7","0xF81ADed2420c373e34F40D33a01189AdDFe2644D","0xB34A914Af86b1EE3928D4759b57aFE365f508789","0x58860B7A392A124206AD76EFf160FF448B7cd46c"].includes(parsedTransaction.to)){
+  if(!["0xb8F55945296407B8f9a7095F0c71b221a257b2F2","0x3c287EBA998789a4a8C88ec0b251bb08978bb980","0xF81ADed2420c373e34F40D33a01189AdDFe2644D","0x58860B7A392A124206AD76EFf160FF448B7cd46c"].includes(parsedTransaction.to)){
     res.status(400).json({error:"Invalid address"})
     return
   }
