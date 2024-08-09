@@ -2,7 +2,6 @@ import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 import { createClient } from '@supabase/supabase-js'
-import {nanoid} from "nanoid"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
