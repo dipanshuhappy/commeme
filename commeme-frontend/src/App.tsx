@@ -3,7 +3,7 @@ import './App.css'
 import {  Route, Switch } from "wouter";
 import MemeDiv from './components/meme-template';
 import Hero from './components/hero';
-import Advanced from './components/explore-polygon';
+
 import Explore from './components/explore-polygon';
 import ExploreCore from './components/explore-coredao';
 

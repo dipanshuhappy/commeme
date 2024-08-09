@@ -2,7 +2,6 @@
 import { HeroHighlight, Highlight } from "./ui/hero-highlight.tsx";
 import { motion } from "framer-motion";
 import { CardBody, CardContainer, CardItem } from "./ui/3d-card.tsx";
-import { If } from "react-if";
 
 // import { Boxes } from './ui/background-boxes.tsx'
 
@@ -27,11 +26,11 @@ import CreateMemeForm from "./create-meme-form.tsx";
 // import FeaturesSectionDemo from './blocks/features-section-demo-1.tsx'
 // import { FeaturesSectionDemo } from './features.tsx'
 
-import { useAccount, useConnect } from "wagmi";
+
 import { StickyScrollRevealDemo } from "./features.tsx";
 
 export default function Hero() {
-  const { isConnected } = useAccount();
+  
   return (
     <>
       {/* <Boxes/> */}

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import  { ChangeEvent, useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
@@ -39,7 +39,7 @@ export default function CreateMemeForm() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedImage]);
 
-  const [location, setLocation] = useLocation();
+  const [_, setLocation] = useLocation();
 
   const chains = useChains()
   const [selectedChain, setSelectedChain] = useState(chains[0].id)

@@ -50,30 +50,6 @@ const queryPolygon = gql`
   }
 `;
 
-const queryCoreDao = gql`
-  {
-    commemes(orderBy: totalDonation, orderDirection: desc) {
-      items {
-        id
-        commemeAddress
-        creator
-        isActive
-        timeToClose
-        threshold
-        totalSupply
-        name
-        symbol
-        tokenAddress
-        metadata
-        poolAddress
-        totalDonation
-        blockNumber
-        blockTimestamp
-        transactionHash
-      }
-    }
-  }
-`;
 export type SupportChainId = keyof typeof CONSTANT_ADDRESSES;
 
 export const useQueryCommemes = (chainId: SupportChainId) => {

@@ -12,7 +12,7 @@ import { shortenAddress } from "@/lib/utils";
 import { Badge } from "./ui/badge";
 import { useAccount, useChains, useConnect, useDisconnect, useSwitchChain, useWalletClient } from "wagmi";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Header() {
   const account = useAccount();
@@ -22,7 +22,7 @@ export default function Header() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const open = () => setIsOpen(true);
+  
   const onClose = () => setIsOpen(false);
 
 

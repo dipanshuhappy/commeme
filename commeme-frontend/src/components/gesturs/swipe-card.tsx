@@ -7,14 +7,12 @@ import { shortenAddress } from "@/lib/utils";
 import { formatEther,parseEther } from "viem/utils";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { SupportChainId, useQueryCommemes } from "@/hooks/use-query-commemes";
+import { SupportChainId } from "@/hooks/use-query-commemes";
 import { CONSTANT_ADDRESSES } from "@/data/addresses-data";
 // import { useSendTransaction } from "wagmi";
 import { toast } from "sonner";
 import { TransactionToast } from "../ui/transaction-toast";
-import { sendTransaction} from 'wagmi/actions'
-import { config } from "@/lib/config";
-import { useAccount, useChainId, useSendTransaction, useSwitchChain, useWalletClient } from "wagmi";
+import { useAccount, useChainId, useWalletClient,   } from "wagmi";
 
 interface CardRotateProps {
   index: number;
@@ -80,9 +78,9 @@ export default function SwipeableStackCards({ commemes, chainId ,refetch}: { com
   const [donationAmount, setDonationAmount] = useState<string>("");
   const chainData = CONSTANT_ADDRESSES[chainId];
   const account = useAccount()
-  
-  
   const wallet = useWalletClient()
+  
+
   const currentChainId = useChainId()
   const swipeLeft = (index: number) => {
     if (index !== currentCard) {

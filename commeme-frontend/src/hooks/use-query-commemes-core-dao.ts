@@ -1,5 +1,5 @@
 // import { CONSTANT_ADDRESSES } from "@/data/addresses-data";
-import { Commeme, CommemeDataResponseDaoCore, CommemeQueryResult } from "@/lib/types";
+import {  CommemeDataResponseDaoCore, } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
 
@@ -27,28 +27,6 @@ const CONSTANT_ADDRESSES = {
    
   }
 } as const;
-const queryPolygon = gql`
-  {
-    commemes(orderBy: totalDonation, orderDirection: desc) {
-      id
-      commemeAddress
-      creator
-      isActive
-      timeToClose
-      threshold
-      totalSupply
-      name
-      symbol
-      tokenAddress
-      metadata
-      poolAddress
-      totalDonation
-      blockNumber
-      blockTimestamp
-      transactionHash
-    }
-  }
-`;
 
 const queryCoreDao = gql`
   {

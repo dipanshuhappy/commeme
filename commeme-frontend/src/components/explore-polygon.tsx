@@ -8,8 +8,7 @@
 // import Card from "@components/Card";
 // import Head from "next/head";
 
-import { SupportChainId, useQueryCommemes } from "@/hooks/use-query-commemes";
-import ExpandableCardDemo from "./blocks/expandable-card-demo-grid";
+import {useQueryCommemes } from "@/hooks/use-query-commemes";
 import SwipeableStackCards from "./gesturs/swipe-card";
 
 
