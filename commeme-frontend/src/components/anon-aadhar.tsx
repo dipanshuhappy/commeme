@@ -13,6 +13,7 @@ import { encodeFunctionData } from "viem";
 import { CONSTANT_ADDRESSES, LEGACY_ABI } from "@/data/addresses-data";
 import { toast } from "sonner";
 import { SupportChainId } from "@/hooks/use-query-commemes";
+import { TransactionToast } from "./ui/transaction-toast";
   
   export default function Anon() {
     const [anonAadhaar] = useAnonAadhaar();
@@ -88,7 +89,7 @@ import { SupportChainId } from "@/hooks/use-query-commemes";
                   toast.success(
                     <TransactionToast
                       hash={responseJson.hash}
-                      title="Commeme Deployed"
+                      title="Ubi Received Deployed"
                       scanner={`${addresses.scanner}/tx/`}
                     />
                   );
