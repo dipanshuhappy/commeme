@@ -56,7 +56,7 @@ const content = [
     description:
       "Constantly be aware of your token, and be safe from fraud buyers or sellers, who are intenionally trying to pump and dump your token, also some part oof your tokens will go to charity :)",
     content: (
-      <div className="h-full w-full  flex items-center justify-center text-white">
+      <div className="h-full w-full  lg:flex items-center justify-center text-white">
       <img
         src="/meme-templates/coin-2859345_1280.png"
         width={500}
@@ -70,7 +70,7 @@ const content = [
 ];
 export function StickyScrollRevealDemo() {
   return (
-    <div className="p-5 bg-black">
+    <div className="p-5 bg-black ">
       <StickyScroll content={content} />
     </div>
   );
