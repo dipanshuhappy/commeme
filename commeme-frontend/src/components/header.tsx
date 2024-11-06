@@ -60,11 +60,14 @@ export default function Header() {
         </Avatar>
       </Link>
       <div className="flex justify-between text-xl font-semibold space-x-8 items-center hidden md:block">
-        <Link href="/explore/137" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
+        {/* <Link href="/explore/137" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
           Explore Polygon
         </Link>
         <Link href="/explore/1116" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
           Explore Core
+        </Link> */}
+        <Link href="/explore" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
+          Explore Memes on Unichain !
         </Link>
       </div>
       <div className="hidden md:block">
@@ -118,12 +121,15 @@ export default function Header() {
           <Menu className="md:hidden h-6 w-6" />
         </SheetTrigger>
         <SheetContent className="flex flex-col space-y-8">
-          <Link href="/explore/137" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
+          {/* <Link href="/explore/137" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
             Explore Polygon
           </Link>
           <Link href="/explore/1116" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
             Explore Core
-          </Link>
+          </Link> */}
+           <Link href="/explore" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
+          Explore Memes on Unichain !
+        </Link>
           <If condition={account.address}>
             <Then>
               <Popover>
