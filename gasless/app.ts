@@ -33,14 +33,14 @@ app.post("/transaction", async (req, res) => {
   console.log(unparasedBody)
   const env = ENV.parse(process.env)
   const parsedTransaction = TransactionSchema.parse(unparasedBody)
-  if(!["0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"].includes(parsedTransaction.to)){
+  if(!["0x7B0EC53Dfcdb0032f0336e6f53419FA48Bc8FAdb"].includes(parsedTransaction.to)){
     res.status(400).json({error:"Invalid address"})
     return
   }
 
   const hash = await sendRawTransaction({
     key: env.KEY as `0x${string}`,
-    rpc: parsedTransaction.chainId === 1116 ? env.COREDAO_RPC : env.POLYGON_RPC,
+    rpc: env.UNICHAIN_RPC ,
     to: parsedTransaction.to as `0x${string}`,
     value: parsedTransaction.value.toString(),
     data: parsedTransaction.data as `0x${string}`,

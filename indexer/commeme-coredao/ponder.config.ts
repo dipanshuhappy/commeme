@@ -25,7 +25,7 @@ export default createConfig({
         event: commemeFactoryEvent,
         parameter: "commemeAddress",
       },
-      startBlock: 4160535,
+      startBlock: 4170409,
     },
   },
 });
