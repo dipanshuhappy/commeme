@@ -127,7 +127,7 @@ export default function Header() {
           <Link href="/explore/1116" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
             Explore Core
           </Link> */}
-           <Link href="/explore" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
+           <Link href="/explore/1301" className="border-b-2 p-2 hover:border-orange-500 hover:text-orange-500">
           Explore Memes on Unichain !
         </Link>
           <If condition={account.address}>

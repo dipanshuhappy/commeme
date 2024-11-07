@@ -6,7 +6,8 @@ import Hero from './components/hero';
 
 import Anon from './components/anon-aadhar';
 
-import Explore from './components/explore-polygon';
+// import Explore from './components/explore-polygon';
+import ExploreUnichain from './components/explore-unichain';
 // import ExploreCore from './components/explore-coredao';
 
 
@@ -28,8 +29,8 @@ function App() {
         {(params) => <>Hello, {params.name}!</>}
       </Route>
       {/* <Route path="/explore/137" component={Explore}/>
-      <Route path="/explore/1116" component={ExploreCore}/> */}
-      <Route path="/explore" component={Explore}/>
+      // <Route path="/explore/1116" component={ExploreCore}/> */}
+      <Route path="/explore" component={ExploreUnichain}/>
         {/* <Route path="/explore/:chainId">
         {(params) => <Explore chainId={parseInt(params.chainId)} />}
         </Route> */}

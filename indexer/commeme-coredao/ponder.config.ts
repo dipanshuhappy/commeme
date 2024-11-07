@@ -10,22 +10,22 @@ const commemeFactoryEvent = parseAbiItem(
 
 export default createConfig({
   networks: {
-    coredao: {
-      chainId: 1116,
-      transport: http(process.env.PONDER_RPC_URL_1116),
+    unichainSepolia: {
+      chainId: 1301,
+      transport: http(process.env.PONDER_RPC_URL_1301),
     },
 
   },
   contracts: {
     Commeme: {
-      network: "coredao",
+      network: "unichainSepolia",
       abi: CommemeAbi,
       factory: {
-        address: "0xb8F55945296407B8f9a7095F0c71b221a257b2F2",
+        address: "0x7B0EC53Dfcdb0032f0336e6f53419FA48Bc8FAdb",
         event: commemeFactoryEvent,
         parameter: "commemeAddress",
       },
-      startBlock: 16624950,
+      startBlock: 4160535,
     },
   },
 });

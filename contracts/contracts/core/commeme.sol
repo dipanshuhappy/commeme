@@ -1,11 +1,11 @@
 //SPDX-License-Identifier: MIT
 
 
-import "../../helperContracts/ierc20_permit.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "../../helperContracts/safemath.sol";
+import "../helperContracts/ierc20.sol";
+// import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "../helperContracts/safemath.sol";
 import "./erc20Meme.sol";
-import "../../helperContracts/wcore_interface.sol";
+import "../helperContracts/wcore_interface.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
@@ -31,6 +31,7 @@ contract Commeme {
     IUniswapV2Router02 public immutable IUniswapV2Router;
     IERC20Permit private _meme;
     address public ROUTER;
+    uint256 public depositAmount;
     // AggregatorV3Interface public immutable corePriceAggregator;
 
     using SafeMath for uint256;
@@ -48,7 +49,7 @@ contract Commeme {
     event PoolCreated(address indexed poolAddress, address tokenA, address tokenB);
     event TokenDeployed(address indexed tokenAddress, string tokenName, string tokenSymbol, uint256 totalSupply);
     event LiquidityAdded(address tokenA, address tokenB, uint256 amountA, uint256 amountB);
-    event Donation(bool isActive, uint256 totalDonationAmount, uint256 currentDonation,uint256 timeToClose,address token,address donor);
+    event Donation(bool indexed isActive, uint256 indexed totalDonationAmount, uint256 indexed depositAmount, uint256 currentDonation,uint256 timeToClose,address token,address donor);
 
     struct MemeDetails {
         string name;
@@ -116,6 +117,7 @@ contract Commeme {
             }
             uint256 minutesToAdd = ((price.mul(_amount)).mul(60));
             timeToClose = timeToClose.add((minutesToAdd.mul(1 minutes)));
+            
            
             if(donationAmount >= threshold) {
                 _deployToken();
@@ -123,29 +125,36 @@ contract Commeme {
                 _createPool(address(_wcore) , memeDetails.tokenAddress, factoryContractAddress);
                 emit PoolCreated(poolAddress, address(_wcore), memeDetails.tokenAddress);
                 _meme = IERC20Permit(memeDetails.tokenAddress);
-                // uint256 _legacyAmount = (donationAmount.mul(10)).div(100);
-                // donationAmount = donationAmount.sub(_legacyAmount);
-                // payable(legacy).transfer(_legacyAmount);
+                // // uint256 _legacyAmount = (donationAmount.mul(10)).div(100);
+                // // donationAmount = donationAmount.sub(_legacyAmount);
+                // // payable(legacy).transfer(_legacyAmount);
                 
-                uint256 depositAmount = (donationAmount.mul(90)).div(100);
-                // require(depositAmount < donationAmount, "deposit exceeding or not calculating");
-                _wcore.deposit{value: depositAmount}();
+                depositAmount = (donationAmount.mul(90)).div(100);
+
+                // // // require(depositAmount < donationAmount, "deposit exceeding or not calculating");
+                if(depositAmount > 0) {
+                    _wcore.deposit{value: depositAmount}();
+                } else {
+                    revert("deposit amount is less than or equal to 0");
+                }
+                // // (bool success, ) = _wcore.call{value: depositAmount}("");
+
                 uint256 toLiquidity =  (memeDetails.totalSupply.mul(70)).div(100);
-                // require(toLiquidity < memeDetails.totalSupply, "liquidity amount exceeds");
+                // // require(toLiquidity < memeDetails.totalSupply, "liquidity amount exceeds");
                 uint256 forAirDrop = memeDetails.totalSupply.sub(toLiquidity);
-                require((toLiquidity.add(forAirDrop)) <= memeDetails.totalSupply);
+                require((toLiquidity.add(forAirDrop)) <= memeDetails.totalSupply, "total supply is more than than the for airdrop");
                 _addLiquidity(toLiquidity, depositAmount);
                 emit LiquidityAdded(address(_wcore), memeDetails.tokenAddress, toLiquidity, depositAmount);
                 _transferTokens(forAirDrop);
                 uint256 _legacyAmount = donationAmount.sub(depositAmount);
-                require(_legacyAmount <= address(this).balance);
-                // donationAmount = donationAmount.sub(_legacyAmount);
+                require(_legacyAmount <= address(this).balance, "legacy amount more than this contract balance");
+                // // donationAmount = donationAmount.sub(_legacyAmount);
                 payable(legacy).transfer(_legacyAmount);
             }
             // (, int256 latestPrice , , ,)  = corePriceAggregator.latestRoundData();
             // uint256 minutesToAdd = ((price.mul(_amount)).mul(60));
             // timeToClose = timeToClose.add((minutesToAdd.mul(1 minutes)));
-            emit Donation(isActive, donationAmount, _amount, timeToClose, address(_meme), _sender);
+            emit Donation(isActive, donationAmount, depositAmount, _amount, timeToClose, address(_meme), _sender);
         }
     }
 
@@ -154,6 +163,10 @@ contract Commeme {
         Pool pool = Pool(_factory);
         poolAddress = pool.createPair(token0, token1);
         return poolAddress;
+    }
+
+    function getEth() public view returns(uint256) {
+        return address(this).balance;
     }
 
     function _addLiquidity(uint256 _amountmeme, uint256 _amountCoin) private returns(uint256, uint256, uint256) {

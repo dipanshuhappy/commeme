@@ -139,12 +139,12 @@ export default function CreateMemeForm() {
           <RadioGroup defaultValue={selectedChain.toString()} onValueChange={e=>setSelectedChain(parseFloat(e))}>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value={`${chainsIds[0]}`} id="option-one" />
-              <Label htmlFor="option-one">CoreDao</Label>
+              <Label htmlFor="option-one">unichainSepolia</Label>
             </div>
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <RadioGroupItem value={`${chainsIds[1]}`} id="option-two" />
               <Label htmlFor="option-two">Polygon Mainnet</Label>
-            </div>
+            </div> */}
           </RadioGroup>
           <Label htmlFor={"name"}>Meme Name</Label>
           <Input

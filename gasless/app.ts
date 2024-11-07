@@ -14,13 +14,14 @@ const TransactionSchema = z.object({
    to: z.string(),
    data: z.string(),
    value: z.number(),
-   chainId: z.union([z.literal(1116), z.literal(137)])
+   chainId: z.union([z.literal(1301)])
 })
 
 const ENV = z.object({
   KEY: z.string(),
-  COREDAO_RPC:z.string(),
-  POLYGON_RPC:z.string(),
+  UNICHAIN_RPC:z.string(),
+  // COREDAO_RPC:z.string(),
+  // POLYGON_RPC:z.string(),
   PORT:z.string().optional()
 })
 console.log("hiiii")
@@ -32,7 +33,7 @@ app.post("/transaction", async (req, res) => {
   console.log(unparasedBody)
   const env = ENV.parse(process.env)
   const parsedTransaction = TransactionSchema.parse(unparasedBody)
-  if(!["0xb8F55945296407B8f9a7095F0c71b221a257b2F2","0x3c287EBA998789a4a8C88ec0b251bb08978bb980","0xF81ADed2420c373e34F40D33a01189AdDFe2644D","0x58860B7A392A124206AD76EFf160FF448B7cd46c"].includes(parsedTransaction.to)){
+  if(!["0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"].includes(parsedTransaction.to)){
     res.status(400).json({error:"Invalid address"})
     return
   }
