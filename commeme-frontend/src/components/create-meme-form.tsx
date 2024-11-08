@@ -89,7 +89,7 @@ export default function CreateMemeForm() {
           addresses.routerAddress,
           addresses.wrapAddress,
           addresses.legacyAddress,
-          BigInt(1),
+          BigInt(1000000),
         ],
       });
 

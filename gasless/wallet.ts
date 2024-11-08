@@ -1,13 +1,15 @@
 import { createClient, createPublicClient, createWalletClient, http } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
-import { coreDao, polygon } from "viem/chains"
-export type SupportChainId = 1116 | 137;
+import { coreDao, polygon, unichainSepolia } from "viem/chains"
+export type SupportChainId = 1116 | 137 | 1301;
 export const getChainObject = (chainId:SupportChainId) => {
     switch (chainId) {
         case 1116:
             return coreDao
         case 137:
             return polygon
+        case 1301:
+            return unichainSepolia
     }
 }
 export const sendRawTransaction = async ({key,rpc,to,value,data,chainId}:{key: `0x${string}`;rpc:string;to:`0x${string}`;value:string;data:`0x${string}`,chainId:SupportChainId}) => {

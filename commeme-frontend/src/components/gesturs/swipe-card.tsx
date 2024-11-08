@@ -75,6 +75,8 @@ export default function SwipeableStackCards({ commemes, chainId ,refetch}: { com
   const [currentCard, setCurrentCard] = useState(0);
   const [donationAmount, setDonationAmount] = useState<string>("");
   const chainData = CONSTANT_ADDRESSES[chainId];
+  console.log("chain data.......",{chainData})
+  console.log("chain id............",{chainId})
   const account = useAccount()
   const wallet = useWalletClient()
   
@@ -121,6 +123,7 @@ export default function SwipeableStackCards({ commemes, chainId ,refetch}: { com
             if (!chainData) {
               throw new Error("Invalid chain id")
             }
+            console.log("jvdjnvfdj", {chainData})
 
             if (!account) {
               throw new Error("Please connect your wallet")
